@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Movie.Engine;
 using Movie.Engine.Models;
 
 namespace Movie.Api.Controllers
@@ -11,6 +13,14 @@ namespace Movie.Api.Controllers
     [ApiController]
     public class MovieController : ControllerBase
     {
+        private readonly IMovieEngine _engine;
+
+        public MovieController(
+            IMovieEngine engine)
+        {
+            _engine = engine;
+        }
+
         [HttpGet("find")]
         [ProducesResponseType(typeof(MovieInfo[]), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -18,12 +28,18 @@ namespace Movie.Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<MovieInfo[]>> Find(
             [FromQuery] string titleLike,
-            [FromQuery] int yearOfRelease,
+            [FromQuery] int? yearOfRelease,
             [FromQuery] string[] genres)
         {
             try
             {
-                return NotFound();
+                var result = (await _engine.GetAsync(titleLike, yearOfRelease, genres)).ToArray();
+                if (result.Length < 1)
+                {
+                    return NotFound();
+                }
+
+                return Ok(result);
             }
             catch (ArgumentException ae)
             {
@@ -41,11 +57,17 @@ namespace Movie.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<MovieInfo[]>> FindTopRated(
-            [FromQuery] int userId)
+            [FromQuery] int? userId)
         {
             try
             {
-                return NotFound();
+                var result = (await _engine.GetTopRatedAsync(userId)).ToArray();
+                if (result.Length < 1)
+                {
+                    return NotFound();
+                }
+
+                return Ok(result);
             }
             catch (ArgumentException ae)
             {
@@ -66,11 +88,8 @@ namespace Movie.Api.Controllers
         {
             try
             {
-                return Ok();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
+                var success = await _engine.PutAsync(userId, titleId, rating);
+                return success ? Ok() : NotFound();
             }
             catch (ArgumentException ae)
             {

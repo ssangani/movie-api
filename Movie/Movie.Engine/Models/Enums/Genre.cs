@@ -4,13 +4,17 @@
     {
         Action,
         Adventure,
+        Biography,
         Comedy,
+        Crime,
         Drama,
+        Family,
         Fantasy,
         Music,
         Mystery,
         Noir,
         Romance,
-        Thriller
+        Thriller,
+        War
     }
 }

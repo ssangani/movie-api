@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.Json.Serialization;
+using Movie.Engine.Models.Enums;
 
 namespace Movie.Engine.Models
 {

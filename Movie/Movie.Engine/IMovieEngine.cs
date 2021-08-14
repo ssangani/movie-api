@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Movie.Engine.Models;
 
@@ -16,7 +17,8 @@ namespace Movie.Engine
         public Task<IEnumerable<MovieInfo>> GetAsync(
             string titleLike,
             int? yearOfRelease,
-            string[] genres);
+            string[] genres,
+            CancellationToken ctx = default);
 
         /// <summary>
         /// Fetches a list of top rated movies
@@ -24,7 +26,8 @@ namespace Movie.Engine
         /// <param name="userId">Based on particular user's ratings (if provided)</param>
         /// <returns>List of top 5 highly rated movies</returns>
         public Task<IEnumerable<MovieInfo>> GetTopRatedAsync(
-            int? userId);
+            int? userId,
+            CancellationToken ctx = default);
 
         /// <summary>
         /// Upserts rating for given user-title pair
@@ -36,6 +39,7 @@ namespace Movie.Engine
         public Task<bool> PutAsync(
             int userId,
             int titleId,
-            int rating);
+            int rating,
+            CancellationToken ctx = default);
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Movie.Engine.Models
+﻿namespace Movie.Engine.Models.Enums
 {
     public enum Genre
     {

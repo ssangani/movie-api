@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Movie.Engine.Models;
 using Movie.Engine.Models.Dto;
 using Movie.Engine.Models.Enums;
 
@@ -21,22 +24,54 @@ namespace Movie.Engine.DataAccess
             _ratings = SeedRatings().ToList();
         }
 
-        private IEnumerable<MovieDto> GetMovies(string title, int? yearOfRelease, IEnumerable<Genre> genres)
+        public async Task<IEnumerable<RatedMovie>> GetMoviesAsync(
+            string titleLike,
+            int? yearOfRelease,
+            IEnumerable<Genre> genres,
+            CancellationToken ctx = default)
         {
-            var noTitleSpecified = string.IsNullOrWhiteSpace(title);
-            var noYearSpecified = !yearOfRelease.HasValue;
-            var noGenresSpecified = genres.Count() == 0;
-            return _movies
-                .Where(m => noTitleSpecified || m.TitleName.Contains(title, StringComparison.InvariantCultureIgnoreCase))
-                .Where(m => noYearSpecified || m.ReleaseYear == yearOfRelease.Value)
-                .Where(m => noGenresSpecified || genres.All(genre => m.Genres.Contains(genre)));
+            await Task.Yield();
+            return GetMovieDtos(titleLike, yearOfRelease, genres)
+                .Select(movie => new RatedMovie
+                {
+                    Movie = movie,
+                    Ratings = GetRatingsByTitle(movie.Id)
+                });
         }
 
-        private IEnumerable<RatingDto> GetRatingsByTitle(IEnumerable<int> titleIds)
+        public async Task<IEnumerable<RatedMovie>> GetTopRatedAsync(
+            int? userId,
+            CancellationToken ctx = default)
         {
-            var titles = new HashSet<int>(titleIds);
-            return _ratings
-                .Where(r => titles.Contains(r.TitleId));
+            await Task.Yield();
+            throw new System.NotImplementedException();
+        }
+
+        private IEnumerable<MovieDto> GetMovieDtos (string titleLike, int? yearOfRelease, IEnumerable<Genre> genres)
+        {
+            IEnumerable<MovieDto> movies = _movies;
+
+            if (!string.IsNullOrWhiteSpace(titleLike))
+            {
+                movies = movies.Where(m => m.TitleName.Contains(titleLike, StringComparison.InvariantCultureIgnoreCase));
+            }
+
+            if (yearOfRelease.HasValue)
+            {
+                movies = movies.Where(m => m.ReleaseYear == yearOfRelease.Value);
+            }
+
+            if (genres.Count() > 0)
+            {
+                movies = movies.Where(m => genres.All(genre => m.Genres.Contains(genre)));
+            }
+
+            return movies;
+        }
+
+        private IEnumerable<RatingDto> GetRatingsByTitle(int titleId)
+        {
+            return _ratings.Where(r => r.TitleId == titleId);
         }
 
         private static IEnumerable<UserDto> SeedUsers()

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Movie.Engine.DataAccess;
+using Movie.Engine.Mappers;
 using Movie.Engine.Models;
 using Movie.Engine.Models.Enums;
 
@@ -12,20 +13,27 @@ namespace Movie.Engine
     public class MovieEngine : IMovieEngine
     {
         private readonly IMovieDao _dao;
+        private readonly IMovieInfoMapper _mapper;
 
         public MovieEngine(
-            IMovieDao dao)
+            IMovieDao dao,
+            IMovieInfoMapper mapper)
         {
             _dao = dao;
+            _mapper = mapper;
         }
 
-        public Task<IEnumerable<MovieInfo>> GetAsync(
+        public async Task<IEnumerable<MovieInfo>> GetAsync(
             string titleLike,
             int? yearOfRelease,
             string[] genres,
             CancellationToken ctx = default)
         {
-            throw new System.NotImplementedException();
+            if (string.IsNullOrWhiteSpace(titleLike) && !yearOfRelease.HasValue && genres.Length == 0)
+                throw new ArgumentException("Query needs to include at least one search term");
+
+            var matchedMovies = await _dao.GetMoviesAsync(titleLike, yearOfRelease, Parse(genres), ctx);
+            return matchedMovies.Select(_mapper.Map);
         }
 
         public Task<IEnumerable<MovieInfo>> GetTopRatedAsync(

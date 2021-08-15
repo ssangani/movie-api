@@ -13,15 +13,19 @@ namespace Movie.Engine.DataAccess
     {
         private const int MinRating = 1;
         private const int MaxRating = 5;
+        private const int TopCount = 5;
+
         private static readonly List<UserDto> _users;
         private static readonly List<MovieDto> _movies;
         private static readonly List<RatingDto> _ratings;
+        private static readonly SemaphoreSlim _semaphore;
 
         static MovieDaoStub()
         {
             _users = SeedUsers().ToList();
             _movies = SeedMovies().ToList();
             _ratings = SeedRatings().ToList();
+            _semaphore = new SemaphoreSlim(1, 1);
         }
 
         public async Task<IEnumerable<RatedMovie>> GetMoviesAsync(
@@ -44,7 +48,66 @@ namespace Movie.Engine.DataAccess
             CancellationToken ctx = default)
         {
             await Task.Yield();
-            throw new System.NotImplementedException();
+            var titleIds = GetTopRatedTitles(userId)
+                .Take(TopCount)
+                .ToHashSet();
+
+            return _movies
+                .Where(m => titleIds.Contains(m.Id))
+                .Select(movie => new RatedMovie
+                {
+                    Movie = movie,
+                    Ratings = GetRatingsByTitle(movie.Id)
+                });
+        }
+
+        public async Task<bool> UpsertRatingAsync(
+            int userId,
+            int titleId,
+            int score,
+            CancellationToken ctx = default)
+        {
+            await Task.Yield();
+            if (!_users.Any(user => user.Id == userId))
+                return false;
+
+            if (!_movies.Any(movie => movie.Id == titleId))
+                return false;
+
+            await _semaphore.WaitAsync();
+            try
+            {
+                _ratings.RemoveAll(r => r.UserId == userId && r.TitleId == titleId);
+            }
+            finally
+            {
+                var random = new Random();
+                _ratings.Add(new RatingDto
+                {
+                    Id = random.Next(),
+                    TitleId = titleId,
+                    UserId = userId,
+                    Score = score
+                });
+                _semaphore.Release();
+            }
+
+            return true;
+        }
+
+        private IEnumerable<int> GetTopRatedTitles(int? userId)
+        {
+            IEnumerable<RatingDto> ratings = _ratings;
+            if (userId.HasValue)
+                ratings = ratings.Where(r => r.UserId == userId.Value);
+
+            return ratings
+                .GroupBy(r => r.TitleId, r => r)
+                .Select(titleGroup => (
+                    AvgScore: titleGroup.Select(titleGroup => titleGroup.Score).Average(),
+                    TitleId: titleGroup.Key))
+                .OrderBy(x => x.AvgScore)
+                .Select(x => x.TitleId);
         }
 
         private IEnumerable<MovieDto> GetMovieDtos (string titleLike, int? yearOfRelease, IEnumerable<Genre> genres)

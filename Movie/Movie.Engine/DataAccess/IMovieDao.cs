@@ -13,5 +13,15 @@ namespace Movie.Engine.DataAccess
             int? yearOfRelease,
             IEnumerable<Genre> genres,
             CancellationToken ctx = default);
+
+        public Task<IEnumerable<RatedMovie>> GetTopRatedAsync(
+            int? userId,
+            CancellationToken ctx = default);
+
+        public Task<bool> UpsertRatingAsync(
+            int userId,
+            int titleId,
+            int score,
+            CancellationToken ctx = default);
     }
 }

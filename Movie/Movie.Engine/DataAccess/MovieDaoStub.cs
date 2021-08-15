@@ -118,7 +118,8 @@ namespace Movie.Engine.DataAccess
                 .Select(titleGroup => (
                     AvgScore: titleGroup.Select(titleGroup => titleGroup.Score).Average(),
                     TitleId: titleGroup.Key))
-                .OrderBy(x => x.AvgScore)
+                .OrderByDescending(x => x.AvgScore)
+                .OrderBy(x => GetMovieTitle(x.TitleId))
                 .Select(x => x.TitleId);
         }
 
@@ -142,6 +143,11 @@ namespace Movie.Engine.DataAccess
             }
 
             return movies;
+        }
+
+        private string GetMovieTitle(int id)
+        {
+            return _movies.Where(m => m.Id == id).FirstOrDefault().TitleName;
         }
 
         private IEnumerable<RatingDto> GetRatingsByTitle(int titleId)

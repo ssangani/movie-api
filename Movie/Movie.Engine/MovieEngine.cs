@@ -36,20 +36,24 @@ namespace Movie.Engine
             return matchedMovies.Select(_mapper.Map);
         }
 
-        public Task<IEnumerable<MovieInfo>> GetTopRatedAsync(
+        public async Task<IEnumerable<MovieInfo>> GetTopRatedAsync(
             int? userId,
             CancellationToken ctx = default)
         {
-            throw new System.NotImplementedException();
+            var matchedMovies = await _dao.GetTopRatedAsync(userId, ctx);
+            return matchedMovies.Select(_mapper.Map);
         }
 
-        public Task<bool> PutAsync(
+        public async Task<bool> PutAsync(
             int userId,
             int titleId,
             int rating,
             CancellationToken ctx = default)
         {
-            throw new System.NotImplementedException();
+            if (rating > 5 || rating < 1)
+                throw new ArgumentException("Rating must be between 1 and 5 (inclusive)");
+
+            return await _dao.UpsertRatingAsync(userId, titleId, rating, ctx);
         }
 
         private IEnumerable<Genre> Parse(string[] rawGenres)

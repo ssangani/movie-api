@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -112,6 +113,45 @@ namespace Movie.Api.Tests
             var movies = JsonSerializer.Deserialize<MovieInfo[]>(body);
             Assert.Single(movies);
             Assert.Contains(movies, movie => movie.Title.Equals(expectedMovie, System.StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        [Fact]
+        public async Task Put_WhenInvalidUser_ThenNotFound()
+        {
+            var client = _factory.CreateClient();
+
+            var path = "api/Movie/user/-1/title/1/5";
+            var content = new StringContent("", Encoding.UTF8);
+            var response = await client.PutAsync(path, content);
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Put_WhenInvalidTitle_ThenNotFound()
+        {
+            var client = _factory.CreateClient();
+
+            var path = "api/Movie/user/1/title/-100/5";
+            var content = new StringContent("", Encoding.UTF8);
+            var response = await client.PutAsync(path, content);
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-7)]
+        [InlineData(11)]
+        public async Task Put_WhenInvalidRating_ThenBadRequest(int rating)
+        {
+            var client = _factory.CreateClient();
+
+            var path = $"api/Movie/user/1/title/1/{rating}";
+            var content = new StringContent("", Encoding.UTF8);
+            var response = await client.PutAsync(path, content);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
     }
 }

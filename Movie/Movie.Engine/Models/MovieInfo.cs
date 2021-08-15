@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Text.Json.Serialization;
-using Movie.Engine.Models.Enums;
 
 namespace Movie.Engine.Models
 {
-    public class MovieInfo
+    public class MovieInfo : IEquatable<MovieInfo>
     {
         [JsonPropertyName("id")]
         public int Id { get; init; }
@@ -16,12 +15,36 @@ namespace Movie.Engine.Models
         public int ReleaseYear { get; init; }
 
         [JsonPropertyName("runningTime")]
-        public TimeSpan RunningTime { get; init; }
+        public int RunningTime { get; init; }
 
         [JsonPropertyName("genres")]
-        public Genre[] Genres { get; init; }
+        public string Genres { get; init; }
 
         [JsonPropertyName("averageRating")]
-        public float AverageRating { get; init; }
+        public double AverageRating { get; init; }
+
+        public override bool Equals(object other)
+        {
+            if (other == null)
+                return false;
+            if (ReferenceEquals(this, other))
+                return true;
+            return other.GetType() == GetType() &&
+                   Equals((MovieInfo) other);
+        }
+
+        public bool Equals(MovieInfo other)
+        {
+            if (other == null)
+                return false;
+            if (ReferenceEquals(this, other))
+                return true;
+            return Id == other.Id &&
+                   Title.Equals(other.Title, StringComparison.InvariantCultureIgnoreCase) &&
+                   ReleaseYear == other.ReleaseYear &&
+                   RunningTime == other.RunningTime &&
+                   Genres.Equals(other.Genres, StringComparison.InvariantCultureIgnoreCase) &&
+                   AverageRating == other.AverageRating;
+        }
     }
 }

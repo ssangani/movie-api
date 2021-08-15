@@ -9,6 +9,9 @@ using Movie.Engine.Models.Enums;
 
 namespace Movie.Engine.DataAccess
 {
+    /// <summary>
+    /// TODO: Replace with a dockerized SQL container loaded with static data set
+    /// </summary>
     public class MovieDaoStub : IMovieDao
     {
         private const int MinRating = 1;
@@ -68,12 +71,15 @@ namespace Movie.Engine.DataAccess
             CancellationToken ctx = default)
         {
             await Task.Yield();
+
+            // Invalidate if user or title isn't found
             if (!_users.Any(user => user.Id == userId))
                 return false;
 
             if (!_movies.Any(movie => movie.Id == titleId))
                 return false;
 
+            // Upsert the score
             await _semaphore.WaitAsync();
             try
             {
@@ -99,7 +105,13 @@ namespace Movie.Engine.DataAccess
         {
             IEnumerable<RatingDto> ratings = _ratings;
             if (userId.HasValue)
+            {
+                // Invalidate if user foreign key reference isn't found
+                if (!_users.Any(user => user.Id == userId))
+                    throw new ArgumentException("User not found");
+
                 ratings = ratings.Where(r => r.UserId == userId.Value);
+            }
 
             return ratings
                 .GroupBy(r => r.TitleId, r => r)

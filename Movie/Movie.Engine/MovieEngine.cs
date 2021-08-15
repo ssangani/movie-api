@@ -29,9 +29,11 @@ namespace Movie.Engine
             string[] genres,
             CancellationToken ctx = default)
         {
+            // Validate
             if (string.IsNullOrWhiteSpace(titleLike) && !yearOfRelease.HasValue && genres.Length == 0)
                 throw new ArgumentException("Query needs to include at least one search term");
 
+            // Return matches
             var matchedMovies = await _dao.GetMoviesAsync(titleLike, yearOfRelease, Parse(genres), ctx);
             return matchedMovies.Select(_mapper.Map);
         }
@@ -50,9 +52,11 @@ namespace Movie.Engine
             int rating,
             CancellationToken ctx = default)
         {
+            // Validate
             if (rating > 5 || rating < 1)
                 throw new ArgumentException("Rating must be between 1 and 5 (inclusive)");
 
+            // Return Matches
             return await _dao.UpsertRatingAsync(userId, titleId, rating, ctx);
         }
 

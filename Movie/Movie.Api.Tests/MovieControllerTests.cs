@@ -153,5 +153,27 @@ namespace Movie.Api.Tests
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
+
+        [Fact]
+        public async Task Put_WhenValid_ThenOk()
+        {
+            var client = _factory.CreateClient();
+
+            var path = "api/Movie/user/1/title/1/5";
+            var content = new StringContent("", Encoding.UTF8);
+            var response = await client.PutAsync(path, content);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Top_WhenInvalidUser_ThenNotFound()
+        {
+            var client = _factory.CreateClient();
+
+            var response = await client.GetAsync("api/Movie/top?userId=-1");
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
     }
 }

@@ -16,7 +16,6 @@ namespace Movie.Engine.DataAccess
     {
         private const int MinRating = 1;
         private const int MaxRating = 5;
-        private const int TopCount = 5;
 
         private static readonly List<UserDto> _users;
         private static readonly List<MovieDto> _movies;
@@ -48,11 +47,12 @@ namespace Movie.Engine.DataAccess
 
         public async Task<IEnumerable<RatedMovie>> GetTopRatedAsync(
             int? userId,
+            int count,
             CancellationToken ctx = default)
         {
             await Task.Yield();
             var titleIds = GetTopRatedTitles(userId)
-                .Take(TopCount)
+                .Take(count)
                 .ToHashSet();
 
             return _movies

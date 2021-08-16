@@ -40,9 +40,10 @@ namespace Movie.Engine
 
         public async Task<IEnumerable<MovieInfo>> GetTopRatedAsync(
             int? userId,
+            int count,
             CancellationToken ctx = default)
         {
-            var matchedMovies = await _dao.GetTopRatedAsync(userId, ctx);
+            var matchedMovies = await _dao.GetTopRatedAsync(userId, count, ctx);
             return matchedMovies.Select(_mapper.Map);
         }
 

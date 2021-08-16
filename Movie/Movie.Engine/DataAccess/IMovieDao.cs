@@ -26,10 +26,12 @@ namespace Movie.Engine.DataAccess
         /// Get list of movies with highest average scores
         /// </summary>
         /// <param name="userId">If provided will be used to ratings specific to given user</param>
+        /// <param name="count">Total number of movies</param>
         /// <param name="ctx"></param>
         /// <returns>Top 5 list of movies</returns>
         public Task<IEnumerable<RatedMovie>> GetTopRatedAsync(
             int? userId,
+            int count,
             CancellationToken ctx = default);
 
         /// <summary>

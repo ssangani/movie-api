@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +13,8 @@ namespace Movie.Api.Controllers
     [ApiController]
     public class MovieController : ControllerBase
     {
+        private const int TopCount = 5;
+
         private readonly IMovieEngine _engine;
 
         public MovieController(
@@ -64,7 +65,7 @@ namespace Movie.Api.Controllers
         {
             try
             {
-                var result = (await _engine.GetTopRatedAsync(userId, ctx)).ToArray();
+                var result = (await _engine.GetTopRatedAsync(userId, TopCount, ctx)).ToArray();
                 if (result.Length < 1)
                 {
                     return NotFound();

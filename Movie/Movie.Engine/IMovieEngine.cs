@@ -24,9 +24,11 @@ namespace Movie.Engine
         /// Fetches a list of top rated movies
         /// </summary>
         /// <param name="userId">Based on particular user's ratings (if provided)</param>
+        /// <param name="count">Number of movies</param>
         /// <returns>List of top 5 highly rated movies</returns>
         public Task<IEnumerable<MovieInfo>> GetTopRatedAsync(
             int? userId,
+            int count,
             CancellationToken ctx = default);
 
         /// <summary>

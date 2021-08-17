@@ -1,25 +1,50 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Dapper;
+using Movie.Engine.Mappers;
 using Movie.Engine.Models;
+using Movie.Engine.Models.Dto;
 using Movie.Engine.Models.Enums;
 
 namespace Movie.Engine.DataAccess
 {
     class MovieDao : IMovieDao
     {
-        public MovieDao()
+        private readonly string _connectionString;
+        private readonly IMovieModelMapper _movieModelMapper;
+        public MovieDao(
+            IMovieModelMapper movieModelMapper)
         {
-
+            _movieModelMapper = movieModelMapper;
+            _connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
         }
 
-        public Task<IEnumerable<RatedMovie>> GetMoviesAsync(
+        public async Task<IEnumerable<RatedMovie>> GetMoviesAsync(
             string titleLike,
             int? yearOfRelease,
             IEnumerable<Genre> genres,
             CancellationToken ctx = default)
         {
-            throw new System.NotImplementedException();
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                using (var multi = await conn.QueryMultipleAsync(
+                    MovieDaoQuery.GetMoviesSql,
+                    new
+                    {
+                        genres = genres.Select(g => (int)g).ToArray(),
+                        titleLike = titleLike,
+                        yearOfRelease = yearOfRelease
+                    }))
+                {
+                    var movies = (await multi.ReadAsync<MovieDto>()).ToList();
+                    var movieRatings = (await multi.ReadAsync<RatingDto>()).ToList();
+                    return _movieModelMapper.Map(movies, movieRatings);
+                }
+            }
         }
 
         public Task<IEnumerable<RatedMovie>> GetTopRatedAsync(

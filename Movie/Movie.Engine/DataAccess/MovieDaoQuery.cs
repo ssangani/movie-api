@@ -37,7 +37,7 @@ OUTER APPLY (
     STUFF (
       (
         SELECT
-          ',' + g.[Name]
+          ',' + g.[Id]
         FROM dbo.tbljoinMovieGenre mg
         JOIN dbo.tblplGenre g ON
           g.[Id] = mg.[GenreId]

@@ -9,9 +9,11 @@ namespace Movie.Engine
     {
         public static IServiceCollection AddMovieEngineServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddTransient<IMovieEngine, MovieEngine>();
+
+            services.AddTransient<IMovieModelMapper, MovieModelMapper>();
+            services.AddTransient<IMovieDao, MovieDao>();
             services.AddTransient<IMovieInfoMapper, MovieInfoMapper>();
-            services.AddSingleton<IMovieDao, MovieDaoStub>();
+            services.AddTransient<IMovieEngine, MovieEngine>();
             return services;
         }
     }

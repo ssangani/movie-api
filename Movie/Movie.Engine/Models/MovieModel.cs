@@ -3,7 +3,7 @@ using Movie.Engine.Models.Enums;
 
 namespace Movie.Engine.Models
 {
-    public class MovieDto
+    public class MovieModel
     {
         public int Id { get; set; }
         public string Title { get; set; }

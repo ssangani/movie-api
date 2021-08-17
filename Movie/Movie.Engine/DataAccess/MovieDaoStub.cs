@@ -18,7 +18,7 @@ namespace Movie.Engine.DataAccess
         private const int MaxRating = 5;
 
         private static readonly List<UserDto> _users;
-        private static readonly List<MovieDto> _movies;
+        private static readonly List<MovieModel> _movies;
         private static readonly List<RatingDto> _ratings;
         private static readonly SemaphoreSlim _semaphore;
 
@@ -37,7 +37,7 @@ namespace Movie.Engine.DataAccess
             CancellationToken ctx = default)
         {
             await Task.Yield();
-            return GetMovieDtos(titleLike, yearOfRelease, genres)
+            return GetMovieModels(titleLike, yearOfRelease, genres)
                 .Select(movie => new RatedMovie
                 {
                     Movie = movie,
@@ -123,13 +123,13 @@ namespace Movie.Engine.DataAccess
                 .Select(x => x.TitleId);
         }
 
-        private IEnumerable<MovieDto> GetMovieDtos (string titleLike, int? yearOfRelease, IEnumerable<Genre> genres)
+        private IEnumerable<MovieModel> GetMovieModels (string titleLike, int? yearOfRelease, IEnumerable<Genre> genres)
         {
-            IEnumerable<MovieDto> movies = _movies;
+            IEnumerable<MovieModel> movies = _movies;
 
             if (!string.IsNullOrWhiteSpace(titleLike))
             {
-                movies = movies.Where(m => m.TitleName.Contains(titleLike, StringComparison.InvariantCultureIgnoreCase));
+                movies = movies.Where(m => m.Title.Contains(titleLike, StringComparison.InvariantCultureIgnoreCase));
             }
 
             if (yearOfRelease.HasValue)
@@ -147,7 +147,7 @@ namespace Movie.Engine.DataAccess
 
         private string GetMovieTitle(int id)
         {
-            return _movies.Where(m => m.Id == id).FirstOrDefault().TitleName;
+            return _movies.Where(m => m.Id == id).FirstOrDefault().Title;
         }
 
         private IEnumerable<RatingDto> GetRatingsByTitle(int titleId)
@@ -171,156 +171,156 @@ namespace Movie.Engine.DataAccess
             yield return new UserDto { Id = 12, Username = "sanguine" };
         }
 
-        private static IEnumerable<MovieDto> SeedMovies()
+        private static IEnumerable<MovieModel> SeedMovies()
         {
             int counter = 1;
-            yield return new MovieDto {
+            yield return new MovieModel {
                 Id = counter++,
-                TitleName = "My Man Godfrey",
+                Title = "My Man Godfrey",
                 ReleaseYear = 1936,
                 Genres = new[] { Genre.Comedy, Genre.Drama, Genre.Romance },
                 RunningTime = new TimeSpan(1, 34, 0) 
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
-                TitleName = "It Happened One Night",
+                Title = "It Happened One Night",
                 ReleaseYear = 1934,
                 Genres = new[] { Genre.Comedy, Genre.Romance },
                 RunningTime = new TimeSpan(1, 45, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
-                TitleName = "The Apartment",
+                Title = "The Apartment",
                 ReleaseYear = 1960,
                 Genres = new[] { Genre.Comedy, Genre.Drama, Genre.Romance },
                 RunningTime = new TimeSpan(2, 5, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
-                TitleName = "How to Steal a Million",
+                Title = "How to Steal a Million",
                 ReleaseYear = 1966,
                 Genres = new[] { Genre.Comedy, Genre.Crime, Genre.Romance },
                 RunningTime = new TimeSpan(2, 3, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
-                TitleName = "To Catch a Thief",
+                Title = "To Catch a Thief",
                 ReleaseYear = 1955,
                 Genres = new[] { Genre.Mystery, Genre.Thriller, Genre.Romance },
                 RunningTime = new TimeSpan(1, 46, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
-                TitleName = "It's a Wonderful Life",
+                Title = "It's a Wonderful Life",
                 ReleaseYear = 1946,
                 Genres = new[] { Genre.Drama, Genre.Family, Genre.Fantasy },
                 RunningTime = new TimeSpan(2, 10, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
-                TitleName = "Mr. Deeds Goes to Town",
+                Title = "Mr. Deeds Goes to Town",
                 ReleaseYear = 1936,
                 Genres = new[] { Genre.Comedy, Genre.Drama, Genre.Romance },
                 RunningTime = new TimeSpan(1, 55, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
-                TitleName = "Mr. Smith Goes to Washington",
+                Title = "Mr. Smith Goes to Washington",
                 ReleaseYear = 1939,
                 Genres = new[] { Genre.Comedy, Genre.Drama },
                 RunningTime = new TimeSpan(2, 9, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
-                TitleName = "The Shop Around the Corner",
+                Title = "The Shop Around the Corner",
                 ReleaseYear = 1940,
                 Genres = new[] { Genre.Comedy, Genre.Drama, Genre.Romance },
                 RunningTime = new TimeSpan(1, 39, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
-                TitleName = "Doctor Zhivago",
+                Title = "Doctor Zhivago",
                 ReleaseYear = 1965,
                 Genres = new[] { Genre.Drama, Genre.Romance, Genre.War },
                 RunningTime = new TimeSpan(3, 17, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
-                TitleName = "Lawrence of Arabia",
+                Title = "Lawrence of Arabia",
                 ReleaseYear = 1962,
                 Genres = new[] { Genre.Adventure, Genre.Biography, Genre.Drama },
                 RunningTime = new TimeSpan(3, 48, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
-                TitleName = "You Can't Take It with You",
+                Title = "You Can't Take It with You",
                 ReleaseYear = 1938,
                 Genres = new[] { Genre.Comedy, Genre.Drama, Genre.Romance },
                 RunningTime = new TimeSpan(2, 6, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
-                TitleName = "The Awful Truth",
+                Title = "The Awful Truth",
                 ReleaseYear = 1937,
                 Genres = new[] { Genre.Comedy, Genre.Romance },
                 RunningTime = new TimeSpan(1, 30, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
-                TitleName = "Breakfast At Tiffany's",
+                Title = "Breakfast At Tiffany's",
                 ReleaseYear = 1961,
                 Genres = new[] { Genre.Comedy, Genre.Drama, Genre.Romance },
                 RunningTime = new TimeSpan(1, 55, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
-                TitleName = "The Artist",
+                Title = "The Artist",
                 ReleaseYear = 2011,
                 Genres = new[] { Genre.Comedy, Genre.Drama, Genre.Romance },
                 RunningTime = new TimeSpan(1, 40, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
-                TitleName = "Murder on the Orient Express",
+                Title = "Murder on the Orient Express",
                 ReleaseYear = 1974,
                 Genres = new[] { Genre.Crime, Genre.Drama, Genre.Mystery },
                 RunningTime = new TimeSpan(2, 8, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
-                TitleName = "The Treasure of the Sierra Madre",
+                Title = "The Treasure of the Sierra Madre",
                 ReleaseYear = 1948,
                 Genres = new[] { Genre.Adventure, Genre.Drama },
                 RunningTime = new TimeSpan(2, 6, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
-                TitleName = "The Big Sleep",
+                Title = "The Big Sleep",
                 ReleaseYear = 1946,
                 Genres = new[] { Genre.Noir, Genre.Crime, Genre.Mystery },
                 RunningTime = new TimeSpan(1, 54, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
-                TitleName = "Casablanca",
+                Title = "Casablanca",
                 ReleaseYear = 1942,
                 Genres = new[] { Genre.Drama, Genre.War, Genre.Romance },
                 RunningTime = new TimeSpan(1, 42, 0)

@@ -428,7 +428,34 @@ VALUES
   (@movieId, @dramaId),
   (@movieId, @romanceId),
   (@movieId, @warId)
-  
+
+INSERT INTO tblUser (Username)
+VALUES
+  ('farley'),
+  ('jakob'),
+  ('patootie'),
+  ('firebug'),
+  ('foxyred'),
+  ('dionelso'),
+  ('ultalmar'),
+  ('acelthes'),
+  ('saursimo'),
+  ('mariumse'),
+  ('nushrono'),
+  ('sanguine')
+
+INSERT INTO tblUserMovieRating (
+  MovieId,
+  UserId
+  Score
+)
+SELECT
+  m.MovieId,
+  u.UserId,
+  (ABS(CHECKSUM(NEWID())) % 5) + 1 AS Score
+FROM dbo.tblMovie m
+CROSS dbo.tblUser u
+
 /*
 SELECT * FROM dbo.tblplGenre
 SELECT * FROM dbo.tblMovie
@@ -452,6 +479,11 @@ OUTER APPLY (
       ''
     ) AS genres
 ) AS g
+INNER JOIN dbo.tblUser u ON
+  u.Username = 'sanguine'
+LEFT JOIN dbo.tblUserMovieRating umr ON
+  umr.UserId = u.Id
+  AND umr.Movieid = m.Id
 */
 
 /*

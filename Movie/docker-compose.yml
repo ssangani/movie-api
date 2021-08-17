@@ -1,5 +1,14 @@
 version: '3'
 services:
+  movie-api:
+    build: .
+    ports:
+      - 44369:44369
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - CONNECTION_STRING=Server=movie-db;Database=MovieDb;Uid=root;Pwd=S0up3dUpPassword;SslMode=None;
+    depends_on:
+      - movie-db
   movie-db:
     build:
       context: .

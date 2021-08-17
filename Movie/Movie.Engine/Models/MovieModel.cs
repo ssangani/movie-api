@@ -1,7 +1,7 @@
 ﻿using System;
 using Movie.Engine.Models.Enums;
 
-namespace Movie.Engine.Models.Dto
+namespace Movie.Engine.Models
 {
     public class MovieDto
     {

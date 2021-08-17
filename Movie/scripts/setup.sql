@@ -446,20 +446,20 @@ VALUES
 
 INSERT INTO tblUserMovieRating (
   MovieId,
-  UserId
+  UserId,
   Score
 )
 SELECT
-  m.MovieId,
-  u.UserId,
+  m.Id,
+  u.Id,
   (ABS(CHECKSUM(NEWID())) % 5) + 1 AS Score
 FROM dbo.tblMovie m
-CROSS dbo.tblUser u
+CROSS JOIN dbo.tblUser u
 
 /*
 SELECT * FROM dbo.tblplGenre
 SELECT * FROM dbo.tblMovie
-SELECT m.*, g.genres
+SELECT m.*, g.genres, umr.Score
 FROM dbo.tblMovie m
 OUTER APPLY (
   SELECT

@@ -1,0 +1,10 @@
+version: '3'
+services:
+  movie-db:
+    build:
+      context: .
+      dockerfile: Dockerfile.SqlServer
+    ports:
+      - 1433:1433
+    environment:
+      - DB_HOST=movie-db

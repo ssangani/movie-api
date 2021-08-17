@@ -428,3 +428,36 @@ VALUES
   (@movieId, @dramaId),
   (@movieId, @romanceId),
   (@movieId, @warId)
+  
+/*
+SELECT * FROM dbo.tblplGenre
+SELECT * FROM dbo.tblMovie
+SELECT m.*, g.genres
+FROM dbo.tblMovie m
+OUTER APPLY (
+  SELECT
+    STUFF(
+      (
+        SELECT
+          ',' + pg.[Name]
+        FROM dbo.tbljoinMovieGenre mg
+        JOIN dbo.tblplGenre pg ON
+          pg.Id = mg.GenreId
+        WHERE
+          mg.MovieId = m.Id
+        FOR XML PATH('')
+      ),
+      1,
+      1,
+      ''
+    ) AS genres
+) AS g
+*/
+
+/*
+DROP TABLE tblplGenre
+DROP TABLE tblMovie
+DROP TABLE tbljoinMovieGenre
+DROP TABLE tblUser
+DROP TABLE tblUserMovieRating
+*/

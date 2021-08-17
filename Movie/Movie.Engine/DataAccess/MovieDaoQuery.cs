@@ -3,17 +3,34 @@
     class MovieDaoQuery
     {
         public const string GetMoviesSql = @"
-DECLARE @tblGenre TABLE (Id INT NOT NULL)
+DECLARE @tblGenre TABLE (
+  Id INT NOT NULL
+)
+
+DECLARE @tblMovie TABLE (
+  Id BIGINT NOT NULL,
+  Title NVARCHAR(100) NOT NULL,
+  ReleaseYear INT NOT NULL,
+  RunningTime TIME NOT NULL,
+  Genres NVARCHAR(400) NOT NULL
+)
 
 INSERT INTO @tblGenre (Id)
 SELECT value FROM STRING_SPLIT(@genres, ',')
 
+INSERT INTO @tblMovie (
+  Id,
+  Title,
+  ReleaseYear,
+  RunningTime,
+  Genres
+)
 SELECT
   m.[Id],
-  m.[Title] AS TitleName,
+  m.[Title],
   m.[ReleaseYear],
   m.[RunningTime],
-  fnGenre.Genres
+  fnGenre.[Genres]
 FROM dbo.tblMovie m
 OUTER APPLY (
   SELECT
@@ -52,6 +69,24 @@ WHERE
       WHERE
         mg.[MovieId] = m.[Id]
     )
-  )";
+  )
+
+SELECT
+  Id,
+  Title,
+  ReleaseYear,
+  RunningTime,
+  Genres
+FROM @tblMovie
+
+SELECT
+  r.Id,
+  r.UserId,
+  r.MovieId,
+  r.Score
+FROM dbo.tblUserMovieRating r
+JOIN @tblMovie m ON
+  m.Id = r.MovieId
+";
     }
 }

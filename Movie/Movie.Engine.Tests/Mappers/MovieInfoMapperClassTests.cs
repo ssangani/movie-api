@@ -31,7 +31,7 @@ namespace Movie.Engine.Tests.Mappers
                     Movie = new MovieDto
                     {
                         Id = 1,
-                        TitleName = "sms",
+                        Title = "sms",
                         ReleaseYear = 1990,
                         RunningTime = new TimeSpan(1, 0, 0),
                         Genres = new Genre[] { Genre.Action, Genre.Fantasy, Genre.Thriller }
@@ -62,7 +62,7 @@ namespace Movie.Engine.Tests.Mappers
                     Movie = new MovieDto
                     {
                         Id = 1,
-                        TitleName = "sms",
+                        Title = "sms",
                         ReleaseYear = 1990,
                         RunningTime = new TimeSpan(1, 0, 0),
                         Genres = new Genre[] { Genre.Action, Genre.Fantasy, Genre.Thriller }
@@ -91,7 +91,7 @@ namespace Movie.Engine.Tests.Mappers
                     Movie = new MovieDto
                     {
                         Id = 1,
-                        TitleName = "sms",
+                        Title = "sms",
                         ReleaseYear = 1990,
                         RunningTime = new TimeSpan(1, 0, 0),
                         Genres = new Genre[] { Genre.Action, Genre.Fantasy, Genre.Thriller }
@@ -121,7 +121,7 @@ namespace Movie.Engine.Tests.Mappers
                     Movie = new MovieDto
                     {
                         Id = 1,
-                        TitleName = "sms",
+                        Title = "sms",
                         ReleaseYear = 1990,
                         RunningTime = new TimeSpan(1, 0, 0),
                         Genres = new Genre[] { Genre.Action, Genre.Fantasy, Genre.Thriller }
@@ -152,7 +152,7 @@ namespace Movie.Engine.Tests.Mappers
                     Movie = new MovieDto
                     {
                         Id = 1,
-                        TitleName = "sms",
+                        Title = "sms",
                         ReleaseYear = 1990,
                         RunningTime = new TimeSpan(1, 0, 0),
                         Genres = new Genre[] { Genre.Action, Genre.Fantasy, Genre.Thriller }
@@ -183,7 +183,7 @@ namespace Movie.Engine.Tests.Mappers
                     Movie = new MovieDto
                     {
                         Id = 1,
-                        TitleName = "sms",
+                        Title = "sms",
                         ReleaseYear = 1990,
                         RunningTime = new TimeSpan(1, 34, 0),
                         Genres = new Genre[] { Genre.Action, Genre.Fantasy, Genre.Thriller }

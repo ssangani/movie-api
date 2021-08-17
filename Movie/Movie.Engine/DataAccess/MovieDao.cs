@@ -8,6 +8,11 @@ namespace Movie.Engine.DataAccess
 {
     class MovieDao : IMovieDao
     {
+        public MovieDao()
+        {
+
+        }
+
         public Task<IEnumerable<RatedMovie>> GetMoviesAsync(
             string titleLike,
             int? yearOfRelease,

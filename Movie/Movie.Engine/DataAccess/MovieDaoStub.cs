@@ -83,7 +83,7 @@ namespace Movie.Engine.DataAccess
             await _semaphore.WaitAsync();
             try
             {
-                _ratings.RemoveAll(r => r.UserId == userId && r.TitleId == titleId);
+                _ratings.RemoveAll(r => r.UserId == userId && r.MovieId == titleId);
             }
             finally
             {
@@ -91,7 +91,7 @@ namespace Movie.Engine.DataAccess
                 _ratings.Add(new RatingDto
                 {
                     Id = random.Next(),
-                    TitleId = titleId,
+                    MovieId = titleId,
                     UserId = userId,
                     Score = score
                 });
@@ -114,7 +114,7 @@ namespace Movie.Engine.DataAccess
             }
 
             return ratings
-                .GroupBy(r => r.TitleId, r => r)
+                .GroupBy(r => r.MovieId, r => r)
                 .Select(titleGroup => (
                     AvgScore: titleGroup.Select(titleGroup => titleGroup.Score).Average(),
                     TitleId: titleGroup.Key))
@@ -152,7 +152,7 @@ namespace Movie.Engine.DataAccess
 
         private IEnumerable<RatingDto> GetRatingsByTitle(int titleId)
         {
-            return _ratings.Where(r => r.TitleId == titleId);
+            return _ratings.Where(r => r.MovieId == titleId);
         }
 
         private static IEnumerable<UserDto> SeedUsers()
@@ -337,7 +337,7 @@ namespace Movie.Engine.DataAccess
                 {
                     Id = random.Next(),
                     UserId = user.Id,
-                    TitleId = movie.Id,
+                    MovieId = movie.Id,
                     Score = random.Next(MinRating, MaxRating + 1)
                 };
         }

@@ -28,7 +28,7 @@ namespace Movie.Engine.Tests.Mappers
             {
                 new RatedMovie
                 {
-                    Movie = new MovieDto
+                    Movie = new MovieModel
                     {
                         Id = 1,
                         Title = "sms",
@@ -59,7 +59,7 @@ namespace Movie.Engine.Tests.Mappers
             {
                 new RatedMovie
                 {
-                    Movie = new MovieDto
+                    Movie = new MovieModel
                     {
                         Id = 1,
                         Title = "sms",
@@ -88,7 +88,7 @@ namespace Movie.Engine.Tests.Mappers
             {
                 new RatedMovie
                 {
-                    Movie = new MovieDto
+                    Movie = new MovieModel
                     {
                         Id = 1,
                         Title = "sms",
@@ -118,7 +118,7 @@ namespace Movie.Engine.Tests.Mappers
             {
                 new RatedMovie
                 {
-                    Movie = new MovieDto
+                    Movie = new MovieModel
                     {
                         Id = 1,
                         Title = "sms",
@@ -149,7 +149,7 @@ namespace Movie.Engine.Tests.Mappers
             {
                 new RatedMovie
                 {
-                    Movie = new MovieDto
+                    Movie = new MovieModel
                     {
                         Id = 1,
                         Title = "sms",
@@ -180,7 +180,7 @@ namespace Movie.Engine.Tests.Mappers
             {
                 new RatedMovie
                 {
-                    Movie = new MovieDto
+                    Movie = new MovieModel
                     {
                         Id = 1,
                         Title = "sms",

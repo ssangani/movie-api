@@ -12,11 +12,11 @@ namespace Movie.Engine
 {
     public class MovieEngine : IMovieEngine
     {
-        private readonly IMovieDao _dao;
+        private readonly IMovieRepository _dao;
         private readonly IMovieInfoMapper _mapper;
 
         public MovieEngine(
-            IMovieDao dao,
+            IMovieRepository dao,
             IMovieInfoMapper mapper)
         {
             _dao = dao;

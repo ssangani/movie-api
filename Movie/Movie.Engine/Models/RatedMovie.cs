@@ -5,7 +5,7 @@ namespace Movie.Engine.Models
 {
     public class RatedMovie
     {
-        public MovieDto Movie { get; set; }
+        public MovieModel Movie { get; set; }
         public IEnumerable<RatingDto> Ratings { get; set; }
     }
 }

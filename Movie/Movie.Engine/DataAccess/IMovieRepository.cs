@@ -6,7 +6,7 @@ using Movie.Engine.Models.Enums;
 
 namespace Movie.Engine.DataAccess
 {
-    public interface IMovieDao
+    public interface IMovieRepository
     {
         /// <summary>
         /// Queries movie data for matched paramters

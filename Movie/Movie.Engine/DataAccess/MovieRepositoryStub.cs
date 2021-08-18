@@ -12,17 +12,17 @@ namespace Movie.Engine.DataAccess
     /// <summary>
     /// TODO: Replace with a dockerized SQL container loaded with static data set
     /// </summary>
-    public class MovieDaoStub : IMovieDao
+    public class MovieRepositoryStub : IMovieRepository
     {
         private const int MinRating = 1;
         private const int MaxRating = 5;
 
         private static readonly List<UserDto> _users;
-        private static readonly List<MovieDto> _movies;
+        private static readonly List<MovieModel> _movies;
         private static readonly List<RatingDto> _ratings;
         private static readonly SemaphoreSlim _semaphore;
 
-        static MovieDaoStub()
+        static MovieRepositoryStub()
         {
             _users = SeedUsers().ToList();
             _movies = SeedMovies().ToList();
@@ -123,9 +123,9 @@ namespace Movie.Engine.DataAccess
                 .Select(x => x.TitleId);
         }
 
-        private IEnumerable<MovieDto> GetMovieDtos (string titleLike, int? yearOfRelease, IEnumerable<Genre> genres)
+        private IEnumerable<MovieModel> GetMovieDtos (string titleLike, int? yearOfRelease, IEnumerable<Genre> genres)
         {
-            IEnumerable<MovieDto> movies = _movies;
+            IEnumerable<MovieModel> movies = _movies;
 
             if (!string.IsNullOrWhiteSpace(titleLike))
             {
@@ -171,17 +171,17 @@ namespace Movie.Engine.DataAccess
             yield return new UserDto { Id = 12, Username = "sanguine" };
         }
 
-        private static IEnumerable<MovieDto> SeedMovies()
+        private static IEnumerable<MovieModel> SeedMovies()
         {
             int counter = 1;
-            yield return new MovieDto {
+            yield return new MovieModel {
                 Id = counter++,
                 Title = "My Man Godfrey",
                 ReleaseYear = 1936,
                 Genres = new[] { Genre.Comedy, Genre.Drama, Genre.Romance },
                 RunningTime = new TimeSpan(1, 34, 0) 
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
                 Title = "It Happened One Night",
@@ -189,7 +189,7 @@ namespace Movie.Engine.DataAccess
                 Genres = new[] { Genre.Comedy, Genre.Romance },
                 RunningTime = new TimeSpan(1, 45, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
                 Title = "The Apartment",
@@ -197,7 +197,7 @@ namespace Movie.Engine.DataAccess
                 Genres = new[] { Genre.Comedy, Genre.Drama, Genre.Romance },
                 RunningTime = new TimeSpan(2, 5, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
                 Title = "How to Steal a Million",
@@ -205,7 +205,7 @@ namespace Movie.Engine.DataAccess
                 Genres = new[] { Genre.Comedy, Genre.Crime, Genre.Romance },
                 RunningTime = new TimeSpan(2, 3, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
                 Title = "To Catch a Thief",
@@ -213,7 +213,7 @@ namespace Movie.Engine.DataAccess
                 Genres = new[] { Genre.Mystery, Genre.Thriller, Genre.Romance },
                 RunningTime = new TimeSpan(1, 46, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
                 Title = "It's a Wonderful Life",
@@ -221,7 +221,7 @@ namespace Movie.Engine.DataAccess
                 Genres = new[] { Genre.Drama, Genre.Family, Genre.Fantasy },
                 RunningTime = new TimeSpan(2, 10, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
                 Title = "Mr. Deeds Goes to Town",
@@ -229,7 +229,7 @@ namespace Movie.Engine.DataAccess
                 Genres = new[] { Genre.Comedy, Genre.Drama, Genre.Romance },
                 RunningTime = new TimeSpan(1, 55, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
                 Title = "Mr. Smith Goes to Washington",
@@ -237,7 +237,7 @@ namespace Movie.Engine.DataAccess
                 Genres = new[] { Genre.Comedy, Genre.Drama },
                 RunningTime = new TimeSpan(2, 9, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
                 Title = "The Shop Around the Corner",
@@ -245,7 +245,7 @@ namespace Movie.Engine.DataAccess
                 Genres = new[] { Genre.Comedy, Genre.Drama, Genre.Romance },
                 RunningTime = new TimeSpan(1, 39, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
                 Title = "Doctor Zhivago",
@@ -253,7 +253,7 @@ namespace Movie.Engine.DataAccess
                 Genres = new[] { Genre.Drama, Genre.Romance, Genre.War },
                 RunningTime = new TimeSpan(3, 17, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
                 Title = "Lawrence of Arabia",
@@ -261,7 +261,7 @@ namespace Movie.Engine.DataAccess
                 Genres = new[] { Genre.Adventure, Genre.Biography, Genre.Drama },
                 RunningTime = new TimeSpan(3, 48, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
                 Title = "You Can't Take It with You",
@@ -269,7 +269,7 @@ namespace Movie.Engine.DataAccess
                 Genres = new[] { Genre.Comedy, Genre.Drama, Genre.Romance },
                 RunningTime = new TimeSpan(2, 6, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
                 Title = "The Awful Truth",
@@ -277,7 +277,7 @@ namespace Movie.Engine.DataAccess
                 Genres = new[] { Genre.Comedy, Genre.Romance },
                 RunningTime = new TimeSpan(1, 30, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
                 Title = "Breakfast At Tiffany's",
@@ -285,7 +285,7 @@ namespace Movie.Engine.DataAccess
                 Genres = new[] { Genre.Comedy, Genre.Drama, Genre.Romance },
                 RunningTime = new TimeSpan(1, 55, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
                 Title = "The Artist",
@@ -293,7 +293,7 @@ namespace Movie.Engine.DataAccess
                 Genres = new[] { Genre.Comedy, Genre.Drama, Genre.Romance },
                 RunningTime = new TimeSpan(1, 40, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
                 Title = "Murder on the Orient Express",
@@ -301,7 +301,7 @@ namespace Movie.Engine.DataAccess
                 Genres = new[] { Genre.Crime, Genre.Drama, Genre.Mystery },
                 RunningTime = new TimeSpan(2, 8, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
                 Title = "The Treasure of the Sierra Madre",
@@ -309,7 +309,7 @@ namespace Movie.Engine.DataAccess
                 Genres = new[] { Genre.Adventure, Genre.Drama },
                 RunningTime = new TimeSpan(2, 6, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
                 Title = "The Big Sleep",
@@ -317,7 +317,7 @@ namespace Movie.Engine.DataAccess
                 Genres = new[] { Genre.Noir, Genre.Crime, Genre.Mystery },
                 RunningTime = new TimeSpan(1, 54, 0)
             };
-            yield return new MovieDto
+            yield return new MovieModel
             {
                 Id = counter++,
                 Title = "Casablanca",

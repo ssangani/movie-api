@@ -46,5 +46,21 @@ namespace Movie.Engine.Models
                    Genres.Equals(other.Genres, StringComparison.InvariantCultureIgnoreCase) &&
                    AverageRating == other.AverageRating;
         }
+
+        public override int GetHashCode()
+        {
+            var hash = new HashCode();
+
+            hash.Add(Title);
+            hash.Add(ReleaseYear);
+            hash.Add(RunningTime.GetHashCode());
+            foreach (var genre in Genres)
+            {
+                hash.Add(genre);
+            }
+            hash.Add(AverageRating);
+
+            return hash.ToHashCode();
+        }
     }
 }

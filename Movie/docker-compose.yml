@@ -3,12 +3,18 @@ services:
   movie-api:
     build: .
     ports:
-      - 44369:44369
+      - 6060:6060
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - CONNECTION_STRING=Server=movie-db;Database=MovieDb;Uid=root;Pwd=S0up3dUpPassword;SslMode=None;
+      - CONNECTION_STRING=Server=movie-db;Database=MovieDb;User=sa;Password=S0up3dUpPassword;
+      - ASPNETCORE_URLS=https://+:6060
+      - ASPNETCORE_HTTPS_PORT=6060
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=sanguine
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     depends_on:
       - movie-db
+    volumes:
+      - ~/.aspnet/https:/https:ro
   movie-db:
     build:
       context: .

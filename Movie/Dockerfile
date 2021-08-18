@@ -21,6 +21,5 @@ FROM mcr.microsoft.com/dotnet/runtime:5.0
 WORKDIR /app
 COPY --from=build /app ./
 COPY ./sql-scripts/wait-for-it.sh .
-ENV ASPNETCORE_URLS="http://*:44369"
-EXPOSE 44369
+EXPOSE 6060
 ENTRYPOINT [ "dotnet", "Movie.Api.dll" ]

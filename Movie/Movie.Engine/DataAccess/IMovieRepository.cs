@@ -2,11 +2,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Movie.Engine.Models;
+using Movie.Engine.Models.Dto;
 using Movie.Engine.Models.Enums;
 
 namespace Movie.Engine.DataAccess
 {
-    public interface IMovieDao
+    public interface IMovieRepository
     {
         /// <summary>
         /// Queries movie data for matched paramters
@@ -47,5 +48,21 @@ namespace Movie.Engine.DataAccess
             int titleId,
             int score,
             CancellationToken ctx = default);
+
+        /// <summary>
+        /// Get data for given movie
+        /// </summary>
+        /// <param name="movieId"></param>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
+        public Task<MovieDto> GetMovieAsync(long movieId, CancellationToken ctx = default);
+
+        /// <summary>
+        /// Get data for given user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
+        public Task<UserDto> GetUserAsync(long userId, CancellationToken ctx = default);
     }
 }

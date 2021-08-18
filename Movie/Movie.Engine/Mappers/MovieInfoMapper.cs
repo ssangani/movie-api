@@ -12,7 +12,7 @@ namespace Movie.Engine.Mappers
             return new MovieInfo
             {
                 Id = from.Movie.Id,
-                Title = from.Movie.TitleName,
+                Title = from.Movie.Title,
                 ReleaseYear = from.Movie.ReleaseYear,
                 RunningTime = (int)from.Movie.RunningTime.TotalMinutes,
                 Genres = string.Join(',', from.Movie.Genres),

@@ -14,6 +14,7 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
+        "CONNECTION_STRING": "Server=localhost;Database=MovieDb;User=sa;Password=S0up3dUpPassword;",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },

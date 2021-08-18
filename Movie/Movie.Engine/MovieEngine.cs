@@ -12,11 +12,11 @@ namespace Movie.Engine
 {
     public class MovieEngine : IMovieEngine
     {
-        private readonly IMovieDao _dao;
+        private readonly IMovieRepository _dao;
         private readonly IMovieInfoMapper _mapper;
 
         public MovieEngine(
-            IMovieDao dao,
+            IMovieRepository dao,
             IMovieInfoMapper mapper)
         {
             _dao = dao;
@@ -43,6 +43,13 @@ namespace Movie.Engine
             int count,
             CancellationToken ctx = default)
         {
+            if (userId.HasValue)
+            {
+                var user = await _dao.GetUserAsync(userId.Value, ctx);
+                if (user == null)
+                    throw new ArgumentException("User does not exist");
+            }
+            
             var matchedMovies = await _dao.GetTopRatedAsync(userId, count, ctx);
             return matchedMovies.Select(_mapper.Map);
         }
@@ -56,6 +63,14 @@ namespace Movie.Engine
             // Validate
             if (rating > 5 || rating < 1)
                 throw new ArgumentException("Rating must be between 1 and 5 (inclusive)");
+
+            var user = await _dao.GetUserAsync(userId, ctx);
+            if (user == null)
+                throw new ArgumentException("User does not exist");
+
+            var movie = await _dao.GetMovieAsync(titleId, ctx);
+            if (movie == null)
+                throw new ArgumentException("Movie does not exist");
 
             // Return Matches
             return await _dao.UpsertRatingAsync(userId, titleId, rating, ctx);

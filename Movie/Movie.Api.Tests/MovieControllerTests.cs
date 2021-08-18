@@ -3,38 +3,41 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
+using Movie.Engine.DataAccess;
 using Movie.Engine.Models;
 using Xunit;
 
 namespace Movie.Api.Tests
 {
     public class MovieControllerTests
-        : IClassFixture<WebApplicationFactory<Startup>>
     {
-        private readonly WebApplicationFactory<Startup> _factory;
-
-        public MovieControllerTests(
-            WebApplicationFactory<Startup> factory)
+        private readonly HttpClient _client;
+        public MovieControllerTests()
         {
-            _factory = factory;
+            var server = new TestServer(new WebHostBuilder()
+                .UseStartup<Startup>()
+                .ConfigureTestServices(services =>
+                {
+                    // replace DAO with stub to use static data
+                    services.AddSingleton<IMovieRepository, MovieRepositoryStub>();
+                }));
+            _client = server.CreateClient();
         }
 
         [Fact]
         public async Task Find_WhenYearOfReleaseInvalid_ThenNotFound()
         {
-            var client = _factory.CreateClient();
-
-            var response = await client.GetAsync("api/Movie/find?yearOfRelease=202020");
+            var response = await _client.GetAsync("api/Movie/find?yearOfRelease=202020");
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
         public async Task Find_WhenNoParametersProvided_ThenBadRequest()
         {
-            var client = _factory.CreateClient();
-
-            var response = await client.GetAsync("api/Movie/find");
+            var response = await _client.GetAsync("api/Movie/find");
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
@@ -43,9 +46,7 @@ namespace Movie.Api.Tests
         [InlineData(1965, "Doctor Zhivago")]
         public async Task Find_WhenYearOfReleaseMatches_ThenVerifyMovieIsWithinOutput(int year, string expectedMovie)
         {
-            var client = _factory.CreateClient();
-
-            var response = await client.GetAsync($"api/Movie/find?yearOfRelease={year}");
+            var response = await _client.GetAsync($"api/Movie/find?yearOfRelease={year}");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var body = await response.Content.ReadAsStringAsync();
@@ -60,9 +61,7 @@ namespace Movie.Api.Tests
         [InlineData("Mr.", "Mr. Deeds Goes to Town")]
         public async Task Find_WhenTitleMatchesFullyOrPartially_ThenVerifyOutput(string titleLike, string expectedMovie)
         {
-            var client = _factory.CreateClient();
-
-            var response = await client.GetAsync($"api/Movie/find?titleLike={titleLike}");
+            var response = await _client.GetAsync($"api/Movie/find?titleLike={titleLike}");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var body = await response.Content.ReadAsStringAsync();
@@ -76,13 +75,11 @@ namespace Movie.Api.Tests
         [InlineData(new[] { "romance" }, "Casablanca")]
         public async Task Find_WhenGenreMatches_ThenMatchExpectedMovie(string[] genres, string expectedMovie)
         {
-            var client = _factory.CreateClient();
-
             var path = new StringBuilder("api/Movie/find?");
             foreach (var genre in genres)
                 path.Append($"&genres={genre}");
 
-            var response = await client.GetAsync(path.ToString());
+            var response = await _client.GetAsync(path.ToString());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var body = await response.Content.ReadAsStringAsync();
@@ -98,15 +95,13 @@ namespace Movie.Api.Tests
             string[] genres,
             string expectedMovie)
         {
-            var client = _factory.CreateClient();
-
             var path = new StringBuilder("api/Movie/find?");
             path.Append($"&titleLike={titleLike}");
             path.Append($"&yearOfRelease={yearOfRelease}");
             foreach (var genre in genres)
                 path.Append($"&genres={genre}");
 
-            var response = await client.GetAsync(path.ToString());
+            var response = await _client.GetAsync(path.ToString());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var body = await response.Content.ReadAsStringAsync();
@@ -118,25 +113,21 @@ namespace Movie.Api.Tests
         [Fact]
         public async Task Put_WhenInvalidUser_ThenNotFound()
         {
-            var client = _factory.CreateClient();
-
             var path = "api/Movie/user/-1/title/1/5";
             var content = new StringContent("", Encoding.UTF8);
-            var response = await client.PutAsync(path, content);
+            var response = await _client.PutAsync(path, content);
 
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         [Fact]
         public async Task Put_WhenInvalidTitle_ThenNotFound()
         {
-            var client = _factory.CreateClient();
-
             var path = "api/Movie/user/1/title/-100/5";
             var content = new StringContent("", Encoding.UTF8);
-            var response = await client.PutAsync(path, content);
+            var response = await _client.PutAsync(path, content);
 
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         [Theory]
@@ -145,11 +136,9 @@ namespace Movie.Api.Tests
         [InlineData(11)]
         public async Task Put_WhenInvalidRating_ThenBadRequest(int rating)
         {
-            var client = _factory.CreateClient();
-
             var path = $"api/Movie/user/1/title/1/{rating}";
             var content = new StringContent("", Encoding.UTF8);
-            var response = await client.PutAsync(path, content);
+            var response = await _client.PutAsync(path, content);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -157,11 +146,9 @@ namespace Movie.Api.Tests
         [Fact]
         public async Task Put_WhenValid_ThenOk()
         {
-            var client = _factory.CreateClient();
-
             var path = "api/Movie/user/1/title/1/5";
             var content = new StringContent("", Encoding.UTF8);
-            var response = await client.PutAsync(path, content);
+            var response = await _client.PutAsync(path, content);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
@@ -169,9 +156,7 @@ namespace Movie.Api.Tests
         [Fact]
         public async Task Top_WhenInvalidUser_ThenNotFound()
         {
-            var client = _factory.CreateClient();
-
-            var response = await client.GetAsync("api/Movie/top?userId=-1");
+            var response = await _client.GetAsync("api/Movie/top?userId=-1");
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }

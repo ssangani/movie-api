@@ -6,7 +6,7 @@ namespace Movie.Engine.Models
     public class MovieInfo : IEquatable<MovieInfo>
     {
         [JsonPropertyName("id")]
-        public int Id { get; init; }
+        public long Id { get; init; }
 
         [JsonPropertyName("title")]
         public string Title { get; init; }
@@ -45,6 +45,22 @@ namespace Movie.Engine.Models
                    RunningTime == other.RunningTime &&
                    Genres.Equals(other.Genres, StringComparison.InvariantCultureIgnoreCase) &&
                    AverageRating == other.AverageRating;
+        }
+
+        public override int GetHashCode()
+        {
+            var hash = new HashCode();
+
+            hash.Add(Title);
+            hash.Add(ReleaseYear);
+            hash.Add(RunningTime.GetHashCode());
+            foreach (var genre in Genres)
+            {
+                hash.Add(genre);
+            }
+            hash.Add(AverageRating);
+
+            return hash.ToHashCode();
         }
     }
 }

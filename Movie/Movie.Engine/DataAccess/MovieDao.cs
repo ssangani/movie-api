@@ -31,7 +31,7 @@ namespace Movie.Engine.DataAccess
         {
             var param = new
             {
-                genres = string.Join(',', genres.Select(g => (int)g)),
+                genres = Flatten(genres),
                 titleLike = titleLike,
                 yearOfRelease = yearOfRelease
             };
@@ -44,6 +44,12 @@ namespace Movie.Engine.DataAccess
                     return _movieModelMapper.Map(movies, movieRatings);
                 }
             }
+        }
+
+        private string Flatten(IEnumerable<Genre> genres)
+        {
+            var res = string.Join(',', genres.Select(g => (int) g));
+            return string.IsNullOrWhiteSpace(res) ? null : res;
         }
 
         public Task<IEnumerable<RatedMovie>> GetTopRatedAsync(

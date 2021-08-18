@@ -48,10 +48,6 @@ namespace Movie.Api.Controllers
             {
                 return StatusCode(StatusCodes.Status400BadRequest, ae.Message);
             }
-            catch (Exception e)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
         }
 
         [HttpGet("top")]
@@ -77,10 +73,6 @@ namespace Movie.Api.Controllers
             {
                 return StatusCode(StatusCodes.Status400BadRequest, ae.Message);
             }
-            catch (Exception e)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
         }
 
         [HttpPut]
@@ -99,10 +91,6 @@ namespace Movie.Api.Controllers
             catch (ArgumentException ae)
             {
                 return StatusCode(StatusCodes.Status400BadRequest, ae.Message);
-            }
-            catch (Exception e)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
     }

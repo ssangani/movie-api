@@ -2,9 +2,9 @@
 {
     public class RatingDto
     {
-        public int Id { get; set; }
-        public int UserId { get; set; }
-        public int TitleId { get; set; }
+        public long Id { get; set; }
+        public long UserId { get; set; }
+        public long MovieId { get; set; }
         public int Score { get; set; }
     }
 }

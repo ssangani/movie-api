@@ -6,7 +6,7 @@ namespace Movie.Engine.Models
     public class MovieInfo : IEquatable<MovieInfo>
     {
         [JsonPropertyName("id")]
-        public int Id { get; init; }
+        public long Id { get; init; }
 
         [JsonPropertyName("title")]
         public string Title { get; init; }

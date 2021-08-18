@@ -29,16 +29,15 @@ namespace Movie.Engine.DataAccess
             IEnumerable<Genre> genres,
             CancellationToken ctx = default)
         {
+            var param = new
+            {
+                genres = string.Join(',', genres.Select(g => (int)g)),
+                titleLike = titleLike,
+                yearOfRelease = yearOfRelease
+            };
             using (var conn = new SqlConnection(_connectionString))
             {
-                using (var multi = await conn.QueryMultipleAsync(
-                    MovieDaoQuery.GetMoviesSql,
-                    new
-                    {
-                        genres = genres.Select(g => (int)g).ToArray(),
-                        titleLike = titleLike,
-                        yearOfRelease = yearOfRelease
-                    }))
+                using (var multi = await conn.QueryMultipleAsync(MovieDaoQuery.GetMoviesSql, param))
                 {
                     var movies = (await multi.ReadAsync<MovieDto>()).ToList();
                     var movieRatings = (await multi.ReadAsync<RatingDto>()).ToList();

@@ -117,7 +117,7 @@ namespace Movie.Api.Tests
             var content = new StringContent("", Encoding.UTF8);
             var response = await _client.PutAsync(path, content);
 
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         [Fact]
@@ -127,7 +127,7 @@ namespace Movie.Api.Tests
             var content = new StringContent("", Encoding.UTF8);
             var response = await _client.PutAsync(path, content);
 
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         [Theory]

@@ -72,13 +72,6 @@ namespace Movie.Engine.DataAccess
         {
             await Task.Yield();
 
-            // Invalidate if user or title isn't found
-            if (!_users.Any(user => user.Id == userId))
-                return false;
-
-            if (!_movies.Any(movie => movie.Id == titleId))
-                return false;
-
             // Upsert the score
             await _semaphore.WaitAsync();
             try
@@ -101,15 +94,38 @@ namespace Movie.Engine.DataAccess
             return true;
         }
 
+        public async Task<MovieDto> GetMovieAsync(long movieId, CancellationToken ctx = default)
+        {
+            await Task.Yield();
+            var movie = _movies
+                .Where(m => m.Id == movieId)
+                .FirstOrDefault();
+
+            return movie == null
+                ? null
+                : new MovieDto
+                {
+                    Id = movie.Id,
+                    Title = movie.Title,
+                    ReleaseYear = movie.ReleaseYear,
+                    RunningTime = movie.RunningTime,
+                    Genres = string.Join(',', movie.Genres.Select(g => (int)g))
+                };
+        }
+
+        public async Task<UserDto> GetUserAsync(long userId, CancellationToken ctx = default)
+        {
+            await Task.Yield();
+            return _users
+                .Where(u => u.Id == userId)
+                .FirstOrDefault();
+        }
+
         private IEnumerable<long> GetTopRatedTitles(int? userId)
         {
             IEnumerable<RatingDto> ratings = _ratings;
             if (userId.HasValue)
             {
-                // Invalidate if user foreign key reference isn't found
-                if (!_users.Any(user => user.Id == userId))
-                    throw new ArgumentException("User not found");
-
                 ratings = ratings.Where(r => r.UserId == userId.Value);
             }
 

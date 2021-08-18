@@ -89,5 +89,21 @@ namespace Movie.Engine.DataAccess
                 return true;
             }
         }
+
+        public async Task<MovieDto> GetMovieAsync(long movieId, CancellationToken ctx = default)
+        {
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                return await conn.QueryFirstOrDefaultAsync<MovieDto>(MovieRepositorySql.GetMovie, new { movieId });
+            }
+        }
+
+        public async Task<UserDto> GetUserAsync(long userId, CancellationToken ctx = default)
+        {
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                return await conn.QueryFirstOrDefaultAsync<UserDto>(MovieRepositorySql.GetUser, new { userId });
+            }
+        }
     }
 }

@@ -171,5 +171,42 @@ WHEN MATCHED THEN UPDATE
 WHEN NOT MATCHED THEN
   INSERT (UserId, MovieId, Score)
   VALUES (@userId, @movieId, @score);";
+
+        public const string GetMovie = @"
+SELECT
+  m.[Id],
+  m.[Title],
+  m.[ReleaseYear],
+  m.[RunningTime],
+  fnGenre.[Genres]
+FROM dbo.tblMovie m
+OUTER APPLY (
+  SELECT
+    STUFF (
+      (
+        SELECT
+          ',' + CAST(g.[Id] AS NVARCHAR(20))
+        FROM dbo.tbljoinMovieGenre mg
+        JOIN dbo.tblplGenre g ON
+          g.[Id] = mg.[GenreId]
+        WHERE
+          mg.[MovieId] = m.[Id]
+        FOR XML PATH('')
+      ),
+      1,
+      1,
+      ''
+    ) AS Genres
+) AS fnGenre
+WHERE
+  m.[Id] = @movieId";
+
+        public const string GetUser = @"
+SELECT
+  u.[Id],
+  u.[Username]
+FROM dbo.tblUser u
+WHERE
+  u.[Id] = @userId";
     }
 }

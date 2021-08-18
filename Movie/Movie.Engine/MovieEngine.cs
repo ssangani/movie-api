@@ -43,7 +43,13 @@ namespace Movie.Engine
             int count,
             CancellationToken ctx = default)
         {
-            // TODO: throw an exception if userId or movieId are invalid references
+            if (userId.HasValue)
+            {
+                var user = await _dao.GetUserAsync(userId.Value, ctx);
+                if (user == null)
+                    throw new ArgumentException("User does not exist");
+            }
+            
             var matchedMovies = await _dao.GetTopRatedAsync(userId, count, ctx);
             return matchedMovies.Select(_mapper.Map);
         }
@@ -58,7 +64,13 @@ namespace Movie.Engine
             if (rating > 5 || rating < 1)
                 throw new ArgumentException("Rating must be between 1 and 5 (inclusive)");
 
-            // TODO: throw an exception if userId or movieId are invalid references
+            var user = await _dao.GetUserAsync(userId, ctx);
+            if (user == null)
+                throw new ArgumentException("User does not exist");
+
+            var movie = await _dao.GetMovieAsync(titleId, ctx);
+            if (movie == null)
+                throw new ArgumentException("Movie does not exist");
 
             // Return Matches
             return await _dao.UpsertRatingAsync(userId, titleId, rating, ctx);

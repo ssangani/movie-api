@@ -37,7 +37,7 @@ namespace Movie.Engine.DataAccess
             };
             using (var conn = new SqlConnection(_connectionString))
             {
-                using (var multi = await conn.QueryMultipleAsync(MovieDaoQuery.GetMoviesSql, param))
+                using (var multi = await conn.QueryMultipleAsync(MovieRepositorySql.FindMovies, param))
                 {
                     var movies = await multi.ReadAsync<MovieDto>();
                     var movieRatings = await multi.ReadAsync<RatingDto>();
@@ -52,21 +52,42 @@ namespace Movie.Engine.DataAccess
             return string.IsNullOrWhiteSpace(res) ? null : res;
         }
 
-        public Task<IEnumerable<RatedMovie>> GetTopRatedAsync(
+        public async Task<IEnumerable<RatedMovie>> GetTopRatedAsync(
             int? userId,
             int count,
             CancellationToken ctx = default)
         {
-            throw new System.NotImplementedException();
+            var param = new { 
+                userId = userId,
+                count = count
+            };
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                using (var multi = await conn.QueryMultipleAsync(MovieRepositorySql.GetTopRatedMovies, param))
+                {
+                    var movies = await multi.ReadAsync<MovieDto>();
+                    var movieRatings = await multi.ReadAsync<RatingDto>();
+                    return _movieModelMapper.Map(movies, movieRatings);
+                }
+            }
         }
 
-        public Task<bool> UpsertRatingAsync(
+        public async Task<bool> UpsertRatingAsync(
             int userId,
             int titleId,
             int score,
             CancellationToken ctx = default)
         {
-            throw new System.NotImplementedException();
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                var res = await conn.ExecuteAsync(MovieRepositorySql.UpsertRatings, new
+                {
+                    userId = userId,
+                    movieId = titleId,
+                    score = score
+                });
+                return true;
+            }
         }
     }
 }

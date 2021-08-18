@@ -43,6 +43,7 @@ namespace Movie.Engine
             int count,
             CancellationToken ctx = default)
         {
+            // TODO: throw an exception if userId or movieId are invalid references
             var matchedMovies = await _dao.GetTopRatedAsync(userId, count, ctx);
             return matchedMovies.Select(_mapper.Map);
         }
@@ -56,6 +57,8 @@ namespace Movie.Engine
             // Validate
             if (rating > 5 || rating < 1)
                 throw new ArgumentException("Rating must be between 1 and 5 (inclusive)");
+
+            // TODO: throw an exception if userId or movieId are invalid references
 
             // Return Matches
             return await _dao.UpsertRatingAsync(userId, titleId, rating, ctx);

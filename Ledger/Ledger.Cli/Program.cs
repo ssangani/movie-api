@@ -14,13 +14,9 @@ namespace Ledger.Cli
   {
     public static async Task Main(string[] args)
     {
-      Console.WriteLine("Hello");
-
       await CreateHosBuilder(args)
         .Build()
         .RunAsync();
-
-      Console.WriteLine("Bye");
     }
 
     private static IHostBuilder CreateHosBuilder(string[] args) {
@@ -48,6 +44,7 @@ namespace Ledger.Cli
         {
           services
             .AddLedgerServices(builtConfig)
+            .Configure<LedgerCommand>(builtConfig)
             .AddHostedService<LedgerService>();
         });
     }

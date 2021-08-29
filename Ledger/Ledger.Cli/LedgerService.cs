@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Ledger.Cli
 {
@@ -10,15 +11,18 @@ namespace Ledger.Cli
   {
     private readonly ILogger _logger;
     private readonly IHostApplicationLifetime _appLifetime;
+    private readonly LedgerCommand _command;
 
     private int? _exitCode;
 
     public LedgerService(
       ILogger<LedgerService> logger,
-      IHostApplicationLifetime appLifetime)
+      IHostApplicationLifetime appLifetime,
+      IOptions<LedgerCommand> command)
     {
       _logger = logger;
       _appLifetime = appLifetime;
+      _command = command.Value;
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
@@ -34,6 +38,7 @@ namespace Ledger.Cli
     {
       try
       {
+        _logger.LogInformation($"Path:{_command.ImportPath}");
         await Task.Yield();
 
         _exitCode = 0;

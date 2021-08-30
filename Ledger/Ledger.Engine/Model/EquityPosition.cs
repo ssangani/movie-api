@@ -4,6 +4,7 @@ namespace Ledger.Engine.Model
 {
   public class EquityPosition
   {
+    public string Format { get; set; }
     public Employee Employee { get; set; }
     public string AwardId { get; set; }
     public decimal Quantity { get; set; }
@@ -14,7 +15,7 @@ namespace Ledger.Engine.Model
         .Append(',')
         .Append(AwardId)
         .Append(',')
-        .Append(Quantity)
+        .Append(Quantity.ToString(Format))
         .ToString();
   }
 }

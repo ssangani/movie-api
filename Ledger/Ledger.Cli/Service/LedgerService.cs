@@ -16,6 +16,8 @@ namespace Ledger.Cli.Service
   {
     private const bool SkipHeader = false;
     private const char Delimiter = ',';
+    private const int MinPrecision = 0;
+    private const int MaxPrecision = 6;
 
     private readonly ILogger _logger;
     private readonly IHostApplicationLifetime _appLifetime;
@@ -30,10 +32,17 @@ namespace Ledger.Cli.Service
       IOptions<LedgerCommand> command,
       ILedgerEngine engine)
     {
+      Validate(command.Value);
       _logger = logger;
       _appLifetime = appLifetime;
       _command = command.Value;
       _engine = engine;
+    }
+
+    private void Validate(LedgerCommand cmd)
+    {
+      if (cmd.Precision < MinPrecision || cmd.Precision > MaxPrecision)
+        throw new ArgumentException($"Precision parameter must be in range [{MinPrecision}, {MaxPrecision}]");
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
@@ -53,7 +62,10 @@ namespace Ledger.Cli.Service
         await SeedAsync(cancellationToken);
 
         // Aggregate all equity positions vested by input grant date
-        var equityPositions = await _engine.GetAllEmployeePositionsAsync(_command.TargetDate, cancellationToken);
+        var equityPositions = await _engine.GetAllEmployeePositionsAsync(
+          _command.TargetDate,
+          _command.Precision,
+          cancellationToken);
 
         // Print the results
         var res = new StringBuilder("Output:\n");

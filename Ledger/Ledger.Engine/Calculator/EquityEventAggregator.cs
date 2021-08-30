@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Ledger.Engine.Model;
 
 namespace Ledger.Engine.Calculator
@@ -9,27 +10,31 @@ namespace Ledger.Engine.Calculator
   {
     public IEnumerable<EquityPosition> GetAllEmployeePositions(
       IEnumerable<EquityEvent> equityEvents,
-      DateTime targetDate);
+      DateTime targetDate,
+      int precision);
   }
 
   public class EquityEventAggregator : IEquityEventAggregator
   {
-    private const int FractionalSharePrecision = 6;
-
     public IEnumerable<EquityPosition> GetAllEmployeePositions(
       IEnumerable<EquityEvent> equityEvents,
-      DateTime targetDate)
+      DateTime targetDate,
+      int precision)
     {
+      var format = GetDisplayFormat(precision);
+
       return equityEvents
         .GroupBy(ee => ee.Employee.Id)
-        .SelectMany(ee => GetEmployeePositions(ee, targetDate))
+        .SelectMany(ee => GetEmployeePositions(ee, targetDate, precision, format))
         .OrderBy(pos => pos.Employee.Id)
         .OrderBy(pos => pos.AwardId);
     }
 
     private IEnumerable<EquityPosition> GetEmployeePositions(
       IEnumerable<EquityEvent> equityEvents,
-      DateTime targetDate)
+      DateTime targetDate,
+      int precision,
+      string displayFormat)
     {
       // We will assume last most entry has latest employee name
       var employee = equityEvents.Last().Employee;
@@ -45,7 +50,7 @@ namespace Ledger.Engine.Calculator
 
         if (equityEvent.GrantDate.Date <= targetDate.Date)
         {
-          var sanitizedQuantity = SanitizeFractionalShares(equityEvent.Quantity);
+          var sanitizedQuantity = SanitizeFractionalShares(equityEvent.Quantity, precision);
           if (equityEvent.Type == EquityEventType.VEST)
           {
             // Add to vested quantity
@@ -64,13 +69,16 @@ namespace Ledger.Engine.Calculator
       {
         yield return new EquityPosition
         {
+          Format = displayFormat,
           Employee = employee,
           AwardId = award.Key,
-          Quantity = SanitizeFractionalShares(award.Value)
+          Quantity = SanitizeFractionalShares(award.Value, precision)
         };
       }
     }
 
-    private decimal SanitizeFractionalShares(decimal quantity) => Math.Round(quantity, FractionalSharePrecision);
+    private decimal SanitizeFractionalShares(decimal quantity, int precision) => Math.Round(quantity, precision, MidpointRounding.ToZero);
+
+    private string GetDisplayFormat(int precision) => $"F{precision}";
   }
 }

@@ -16,6 +16,7 @@ namespace Ledger.Engine
 
     public Task<IEnumerable<EquityPosition>> GetAllEmployeePositionsAsync(
       DateTime targetDate,
+      int precision,
       CancellationToken ctx = default);
   }
 
@@ -41,10 +42,11 @@ namespace Ledger.Engine
 
     public async Task<IEnumerable<EquityPosition>> GetAllEmployeePositionsAsync(
       DateTime targetDate,
+      int precision,
       CancellationToken ctx = default)
     {
       var equityEvents = await _dataStore.GetAsync(ctx);
-      return _aggregator.GetAllEmployeePositions(equityEvents, targetDate);
+      return _aggregator.GetAllEmployeePositions(equityEvents, targetDate, precision);
     }
   }
 }

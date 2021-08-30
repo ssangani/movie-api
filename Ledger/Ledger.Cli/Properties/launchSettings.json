@@ -17,6 +17,7 @@
     },
     "Ledger.Cli": {
       "commandName": "Project",
+      "commandLineArgs": "--ImportPath=example1.csv",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

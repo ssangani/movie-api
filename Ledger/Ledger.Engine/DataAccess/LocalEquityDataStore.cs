@@ -19,8 +19,8 @@ namespace Ledger.Engine.DataAccess
       EquityEvent equityEvent,
       CancellationToken ctx = default)
     {
-      await Task.Yield();
       _events.Add(equityEvent);
+      await Task.Yield();
     }
 
     public async Task<IEnumerable<EquityEvent>> GetAsync(CancellationToken ctx = default)

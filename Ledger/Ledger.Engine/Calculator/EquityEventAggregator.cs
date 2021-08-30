@@ -21,11 +21,9 @@ namespace Ledger.Engine.Calculator
       DateTime targetDate,
       int precision)
     {
-      var format = GetDisplayFormat(precision);
-
       return equityEvents
         .GroupBy(ee => ee.Employee.Id)
-        .SelectMany(ee => GetEmployeePositions(ee, targetDate, precision, format))
+        .SelectMany(ee => GetEmployeePositions(ee, targetDate, precision))
         .OrderBy(pos => pos.Employee.Id)
         .OrderBy(pos => pos.AwardId);
     }
@@ -33,8 +31,7 @@ namespace Ledger.Engine.Calculator
     private IEnumerable<EquityPosition> GetEmployeePositions(
       IEnumerable<EquityEvent> equityEvents,
       DateTime targetDate,
-      int precision,
-      string displayFormat)
+      int precision)
     {
       // We will assume last most entry has latest employee name
       var employee = equityEvents.Last().Employee;
@@ -69,7 +66,7 @@ namespace Ledger.Engine.Calculator
       {
         yield return new EquityPosition
         {
-          Format = displayFormat,
+          Precision = precision,
           Employee = employee,
           AwardId = award.Key,
           Quantity = SanitizeFractionalShares(award.Value, precision)
@@ -78,7 +75,5 @@ namespace Ledger.Engine.Calculator
     }
 
     private decimal SanitizeFractionalShares(decimal quantity, int precision) => Math.Round(quantity, precision, MidpointRounding.ToZero);
-
-    private string GetDisplayFormat(int precision) => $"F{precision}";
   }
 }

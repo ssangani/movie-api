@@ -1,4 +1,4 @@
-﻿namespace Ledger.Engine.Models
+﻿namespace Ledger.Engine.Model
 {
   public class Employee
   {

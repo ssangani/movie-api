@@ -1,4 +1,4 @@
-﻿namespace Ledger.Cli
+﻿namespace Ledger.Cli.Service
 {
   public class LedgerCommand
   {

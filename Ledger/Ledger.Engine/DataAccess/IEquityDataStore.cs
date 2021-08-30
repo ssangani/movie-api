@@ -1,6 +1,7 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
-using Ledger.Engine.Models;
+using Ledger.Engine.Model;
 
 namespace Ledger.Engine.DataAccess
 {
@@ -9,5 +10,7 @@ namespace Ledger.Engine.DataAccess
     public Task AppendEquityEventAsync(
       EquityEvent equityEvent,
       CancellationToken ctx = default);
+
+    public Task<IEnumerable<EquityEvent>> GetAsync(CancellationToken ctx = default);
   }
 }

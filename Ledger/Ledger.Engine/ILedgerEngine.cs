@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Ledger.Engine.Calculator;
 using Ledger.Engine.DataAccess;
 using Ledger.Engine.Model;
 
@@ -12,17 +14,22 @@ namespace Ledger.Engine
       EquityEvent equityEvent,
       CancellationToken ctx = default);
 
-    public Task<IEnumerable<EquityEvent>> GetAsync(CancellationToken ctx = default);
+    public Task<IEnumerable<EquityPosition>> GetAllEmployeePositionsAsync(
+      DateTime targetDate,
+      CancellationToken ctx = default);
   }
 
   public class LedgerEngine : ILedgerEngine
   {
-    public readonly IEquityDataStore _dataStore;
+    private readonly IEquityDataStore _dataStore;
+    private readonly IEquityEventAggregator _aggregator;
 
     public LedgerEngine(
-      IEquityDataStore dataStore)
+      IEquityDataStore dataStore,
+      IEquityEventAggregator aggregator)
     {
       _dataStore = dataStore;
+      _aggregator = aggregator;
     }
 
     public async Task AppendEquityEventAsync(
@@ -32,9 +39,12 @@ namespace Ledger.Engine
       await _dataStore.AppendEquityEventAsync(equityEvent, ctx);
     }
 
-    public Task<IEnumerable<EquityEvent>> GetAsync(CancellationToken ctx = default)
+    public async Task<IEnumerable<EquityPosition>> GetAllEmployeePositionsAsync(
+      DateTime targetDate,
+      CancellationToken ctx = default)
     {
-      return _dataStore.GetAsync(ctx);
+      var equityEvents = await _dataStore.GetAsync(ctx);
+      return _aggregator.GetAllEmployeePositions(equityEvents, targetDate);
     }
   }
 }

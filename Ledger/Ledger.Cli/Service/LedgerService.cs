@@ -14,7 +14,7 @@ namespace Ledger.Cli.Service
 {
   public class LedgerService : IHostedService
   {
-    private const bool SkipHeader = true;
+    private const bool SkipHeader = false;
     private const char Delimiter = ',';
 
     private readonly ILogger _logger;
@@ -52,12 +52,17 @@ namespace Ledger.Cli.Service
         // Seed data from file provided via CLI args
         await SeedAsync(cancellationToken);
 
-        // Print
-        var events = await _engine.GetAsync(cancellationToken);
-        foreach (var evt in events)
+        // Aggregate all equity positions vested by input grant date
+        var equityPositions = await _engine.GetAllEmployeePositionsAsync(_command.TargetDate, cancellationToken);
+
+        // Print the results
+        var res = new StringBuilder("Output:\n");
+        foreach (var equityPosition in equityPositions)
         {
-          _logger.LogInformation(evt.ToString());
+          res.AppendLine(equityPosition.ToString());
         }
+
+        _logger.LogInformation(res.ToString());
 
         // Exit with success
         _exitCode = 0;
@@ -85,7 +90,7 @@ namespace Ledger.Cli.Service
 
     private async Task SeedAsync(CancellationToken cancellationToken)
     {
-      _logger.LogInformation($"Seeding Data from {_command.ImportPath}");
+      _logger.LogDebug($"Seeding Data from {_command.ImportPath}");
 
       var csvOptions = new CsvParserOptions(SkipHeader, Delimiter);
       var mapping = new CsvEquityEventMapping();
@@ -98,6 +103,8 @@ namespace Ledger.Cli.Service
         .Select(evt => _engine.AppendEquityEventAsync(evt.Result, cancellationToken));
 
       await Task.WhenAll(seedTasks);
+
+      _logger.LogDebug("Seed completed");
     }
   }
 }

@@ -40,6 +40,11 @@ namespace Ledger.Cli.Service
       _aggregator = aggregator;
     }
 
+    /// <summary>
+    /// Validate the program parameters.
+    /// If invalid, this will stop the applciation
+    /// </summary>
+    /// <param name="cmd"></param>
     private void Validate(LedgerCommand cmd)
     {
       if (cmd.Precision < MinPrecision || cmd.Precision > MaxPrecision)
@@ -64,11 +69,15 @@ namespace Ledger.Cli.Service
       return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// The main brain of the application.
+    /// This is where you can start abstracting out classes/functions by responsibility.
+    /// </summary>
     private void Run()
     {
       try
       {
-        // Seed data from file provided via CLI args
+        // Read the equity positions data from file provided via CLI args
         var equityEvents = GetEvents();
 
         // Aggregate all equity positions vested by input grant date
@@ -101,10 +110,20 @@ namespace Ledger.Cli.Service
       }
     }
 
+
+    /// <summary>
+    /// NOTE: Hope you don't OOM the app with a large file.
+    ///
+    /// This will read the file and load it into an in-memory collection.
+    /// This can be decoupled into a separate service which can keep ingesting
+    /// stream of equity events and append them to a datastore.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerable<EquityEvent> GetEvents()
     {
       _logger.LogDebug($"Reading from {_command.ImportPath}");
 
+      // This library is very performant and makes reading file as a list very simple
       var csvOptions = new CsvParserOptions(SkipHeader, Delimiter);
       var mapping = new CsvEquityEventMapping();
       var parser = new CsvParser<EquityEvent>(csvOptions, mapping);

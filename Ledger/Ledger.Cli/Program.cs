@@ -20,6 +20,12 @@ namespace Ledger.Cli
         .RunAsync();
     }
 
+    /// <summary>
+    /// A very boilerplate hosted service setup.
+    /// Might have been an overkill for this but it does come with DI, Config binding, and logging
+    /// </summary>
+    /// <param name="args">CLI Arguments</param>
+    /// <returns></returns>
     private static IHostBuilder CreateHosBuilder(string[] args) {
       var builtConfig = new ConfigurationBuilder()
         .AddEnvironmentVariables()

@@ -5,14 +5,6 @@ using Ledger.Cli.Model;
 
 namespace Ledger.Cli.Calculator
 {
-  public interface IEquityEventAggregator
-  {
-    public IEnumerable<EquityPosition> GetAllEmployeePositions(
-      IEnumerable<EquityEvent> equityEvents,
-      DateTime targetDate,
-      int precision);
-  }
-
   public class EquityEventAggregator : IEquityEventAggregator
   {
     public IEnumerable<EquityPosition> GetAllEmployeePositions(

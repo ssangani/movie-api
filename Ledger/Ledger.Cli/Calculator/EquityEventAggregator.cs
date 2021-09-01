@@ -68,7 +68,7 @@ namespace Ledger.Cli.Calculator
           Precision = precision,
           Employee = employee,
           AwardId = award.Key,
-          Quantity = SanitizeFractionalShares(award.Value, precision)
+          Quantity = award.Value
         };
       }
     }

@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Ledger.Engine;
-using Ledger.Engine.Model;
+using Ledger.Cli.Calculator;
+using Ledger.Cli.Model;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -22,7 +23,7 @@ namespace Ledger.Cli.Service
     private readonly ILogger _logger;
     private readonly IHostApplicationLifetime _appLifetime;
     private readonly LedgerCommand _command;
-    private readonly ILedgerEngine _engine;
+    private readonly IEquityEventAggregator _aggregator;
 
     private int? _exitCode;
 
@@ -30,13 +31,13 @@ namespace Ledger.Cli.Service
       ILogger<LedgerService> logger,
       IHostApplicationLifetime appLifetime,
       IOptions<LedgerCommand> command,
-      ILedgerEngine engine)
+      IEquityEventAggregator aggregator)
     {
       Validate(command.Value);
       _logger = logger;
       _appLifetime = appLifetime;
       _command = command.Value;
-      _engine = engine;
+      _aggregator = aggregator;
     }
 
     private void Validate(LedgerCommand cmd)
@@ -49,23 +50,32 @@ namespace Ledger.Cli.Service
     {
       _logger.LogDebug($"Starting with arguments: {string.Join(" ", Environment.GetCommandLineArgs())}");
 
-      _ = _appLifetime.ApplicationStarted.Register(async () => await RunAsync(cancellationToken));
+      _ = _appLifetime.ApplicationStarted.Register(() => Run());
 
       return Task.CompletedTask;
     }
 
-    public async Task RunAsync(CancellationToken cancellationToken)
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+      _logger.LogDebug($"Exiting with return code: {_exitCode}");
+
+      // In case of forced cancellation set exit code to -1
+      Environment.ExitCode = _exitCode.GetValueOrDefault(-1);
+      return Task.CompletedTask;
+    }
+
+    private void Run()
     {
       try
       {
         // Seed data from file provided via CLI args
-        await SeedAsync(cancellationToken);
+        var equityEvents = GetEvents();
 
         // Aggregate all equity positions vested by input grant date
-        var equityPositions = await _engine.GetAllEmployeePositionsAsync(
+        var equityPositions = _aggregator.GetAllEmployeePositions(
+          equityEvents,
           _command.TargetDate,
-          _command.Precision,
-          cancellationToken);
+          _command.Precision);
 
         // Print the results
         var res = new StringBuilder("Output:\n");
@@ -91,32 +101,18 @@ namespace Ledger.Cli.Service
       }
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
+    private IEnumerable<EquityEvent> GetEvents()
     {
-      _logger.LogDebug($"Exiting with return code: {_exitCode}");
-
-      // In case of forced cancellation set exit code to -1
-      Environment.ExitCode = _exitCode.GetValueOrDefault(-1);
-      return Task.CompletedTask;
-    }
-
-    private async Task SeedAsync(CancellationToken cancellationToken)
-    {
-      _logger.LogDebug($"Seeding Data from {_command.ImportPath}");
+      _logger.LogDebug($"Reading from {_command.ImportPath}");
 
       var csvOptions = new CsvParserOptions(SkipHeader, Delimiter);
       var mapping = new CsvEquityEventMapping();
       var parser = new CsvParser<EquityEvent>(csvOptions, mapping);
 
-      var seedTasks = parser
+      return parser
         .ReadFromFile(_command.ImportPath, Encoding.ASCII)
         .Where(evt => evt.IsValid)
-        .ToList()
-        .Select(evt => _engine.AppendEquityEventAsync(evt.Result, cancellationToken));
-
-      await Task.WhenAll(seedTasks);
-
-      _logger.LogDebug("Seed completed");
+        .Select(evt => evt.Result);
     }
   }
 }

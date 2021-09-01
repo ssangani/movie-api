@@ -28,8 +28,4 @@
     <PackageReference Include="TinyCsvParser" Version="2.6.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Ledger.Engine\Ledger.Engine.csproj" />
-  </ItemGroup>
-
 </Project>

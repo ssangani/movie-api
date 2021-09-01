@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Ledger.Engine.Model;
+using Ledger.Cli.Model;
 
-namespace Ledger.Engine.Calculator
+namespace Ledger.Cli.Calculator
 {
   public interface IEquityEventAggregator
   {

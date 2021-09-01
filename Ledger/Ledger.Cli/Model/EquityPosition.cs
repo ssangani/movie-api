@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Ledger.Engine.Model
+namespace Ledger.Cli.Model
 {
   public class EquityPosition
   {

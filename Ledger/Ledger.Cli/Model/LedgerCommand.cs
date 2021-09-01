@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ledger.Cli.Service
+namespace Ledger.Cli.Model
 {
   public class LedgerCommand
   {

@@ -1,8 +1,8 @@
-﻿using Ledger.Engine.Model;
+﻿using Ledger.Cli.Model;
 using TinyCsvParser.Mapping;
 using TinyCsvParser.TypeConverter;
 
-namespace Ledger.Cli.Service
+namespace Ledger.Cli.Calculator
 {
   public class CsvEquityEventMapping : CsvMapping<EquityEvent>
   {

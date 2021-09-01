@@ -1,9 +1,9 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using Ledger.Cli.Calculator;
+using Ledger.Cli.Model;
 using Ledger.Cli.Service;
-using Ledger.Engine;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -44,7 +44,7 @@ namespace Ledger.Cli
         .ConfigureServices((hostContext, services) =>
         {
           services
-            .AddLedgerServices(builtConfig)
+            .AddTransient<IEquityEventAggregator, EquityEventAggregator>()
             .Configure<LedgerCommand>(builtConfig)
             .AddHostedService<LedgerService>();
         });

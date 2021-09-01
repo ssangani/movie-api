@@ -1,4 +1,4 @@
-﻿namespace Ledger.Engine.Model
+﻿namespace Ledger.Cli.Model
 {
   public enum EquityEventType
   {

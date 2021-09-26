@@ -6,10 +6,10 @@ using Xunit;
 
 namespace EventScheduler.Api.Tests
 {
-  public class PartnerAvailabilitiesSerializationTests
+  public class SerializationTests
   {
     [Fact]
-    public void TestDeserialization()
+    public void TestPartnerAvailablityDeserialization()
     {
       var expected = new PartnerAvailabilities
       {

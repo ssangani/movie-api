@@ -35,13 +35,13 @@ namespace EventScheduler.Api.Tests
                 "cbrenna@hubspotpartners.com"
               },
               Name = "Ireland",
-              StartDate = new DateTime(2017,4,29)
+              EventDate = new DateTime(2017,4,29)
             },
             new CountryEvent
             {
               Attendees = new HashSet<string>(),
               Name = "United States",
-              StartDate = null
+              EventDate = null
             },
             new CountryEvent
             {
@@ -51,7 +51,7 @@ namespace EventScheduler.Api.Tests
                 "tmozie@hubspotpartners.com"
               },
               Name = "Spain",
-              StartDate = new DateTime(2017,4,28)
+              EventDate = new DateTime(2017,4,28)
             }
           }
         },

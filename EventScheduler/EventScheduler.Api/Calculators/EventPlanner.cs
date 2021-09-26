@@ -63,7 +63,7 @@ namespace EventScheduler.Api.Calculators
             {
               Name = countryPartners.Key,
               Attendees = new HashSet<string>(),
-              StartDate = null,
+              EventDate = null,
             });
           continue;
         }
@@ -91,7 +91,7 @@ namespace EventScheduler.Api.Calculators
             {
               Name = countryPartners.Key,
               Attendees = attendees,
-              StartDate = earliestEventDate,
+              EventDate = earliestEventDate,
             });
       }
 

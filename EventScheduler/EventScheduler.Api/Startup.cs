@@ -1,22 +1,20 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using EventScheduler.Api.Calculators;
+using EventScheduler.Api.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace EventScheduler.Api
 {
   public class Startup
   {
+    // TODO: Move this to appsettings
+    private const string _baseAddress = @"https://candidate.hubteam.com/candidateTest/v3/problem/";
+
     public Startup(IConfiguration configuration)
     {
       Configuration = configuration;
@@ -28,6 +26,15 @@ namespace EventScheduler.Api
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddScoped<IEventPlanner, EventPlanner>();
+      services.AddHttpClient<IPartnerClient, PartnerClient>(client =>
+      {
+        client.BaseAddress = new Uri(_baseAddress);
+      });
+      services.AddHttpClient<IEventSchedulerClient, EventSchedulerClient>(client =>
+      {
+        client.BaseAddress = new Uri(_baseAddress);
+      });
+
       services.AddControllers();
       services.AddSwaggerGen(c =>
       {

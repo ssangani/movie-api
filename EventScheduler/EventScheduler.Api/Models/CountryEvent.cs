@@ -13,7 +13,9 @@ namespace EventScheduler.Api.Models
     [JsonPropertyName("name")]
     public string Name { get; set; }
     [JsonPropertyName("startDate")]
-    public DateTime? StartDate { get; set; }
+    public string StartDate => EventDate?.ToString("yyyy-MM-dd");
+
+    public DateTime? EventDate { get; set; }
 
     public override bool Equals(object other)
     {
@@ -35,7 +37,7 @@ namespace EventScheduler.Api.Models
       return AttendeeCount == other.AttendeeCount &&
         Attendees.SetEquals(other.Attendees) &&
         Name.Equals(other.Name, StringComparison.InvariantCultureIgnoreCase) &&
-        StartDate.Equals(other.StartDate);
+        EventDate.Equals(other.EventDate);
     }
 
     public override int GetHashCode()
@@ -45,7 +47,7 @@ namespace EventScheduler.Api.Models
       hash.Add(AttendeeCount);
       hash.Add(Attendees);
       hash.Add(Name);
-      hash.Add(StartDate);
+      hash.Add(EventDate);
 
       return hash.ToHashCode();
     }

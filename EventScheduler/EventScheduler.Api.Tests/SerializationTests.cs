@@ -273,5 +273,45 @@ namespace EventScheduler.Api.Tests
 
       Assert.Equal(expected.Availabilities, actual.Availabilities);
     }
+
+    [Fact]
+    public void TestScheduleSerialization()
+    {
+      var schedule = new EventSchedule
+      {
+        Events = new List<CountryEvent>
+        {
+          new CountryEvent
+          {
+            Attendees = new HashSet<string>
+            {
+              "cbrenna@hubspotpartners.com"
+            },
+            Name = "Ireland",
+            EventDate = new DateTime(2017,4,29)
+          },
+          new CountryEvent
+          {
+            Attendees = new HashSet<string>(),
+            Name = "United States",
+            EventDate = null
+          },
+          new CountryEvent
+          {
+            Attendees = new HashSet<string> {
+              "omajica@hubspotpartners.com",
+              "taffelt@hubspotpartners.com",
+              "tmozie@hubspotpartners.com"
+            },
+            Name = "Spain",
+            EventDate = new DateTime(2017,4,28)
+          }
+        }
+      };
+
+      var expected = @"{""countries"":[{""attendeeCount"":1,""attendees"":[""cbrenna@hubspotpartners.com""],""name"":""Ireland"",""startDate"":""2017-04-29""},{""attendeeCount"":0,""attendees"":[],""name"":""United States"",""startDate"":null},{""attendeeCount"":3,""attendees"":[""omajica@hubspotpartners.com"",""taffelt@hubspotpartners.com"",""tmozie@hubspotpartners.com""],""name"":""Spain"",""startDate"":""2017-04-28""}]}";
+      var actual = JsonSerializer.Serialize(schedule);
+      Assert.Equal(expected, actual);
+    }
   }
 }

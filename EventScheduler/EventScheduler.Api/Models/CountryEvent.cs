@@ -14,7 +14,7 @@ namespace EventScheduler.Api.Models
     public string Name { get; set; }
     [JsonPropertyName("startDate")]
     public string StartDate => EventDate?.ToString("yyyy-MM-dd");
-
+    [JsonIgnore]
     public DateTime? EventDate { get; set; }
 
     public override bool Equals(object other)

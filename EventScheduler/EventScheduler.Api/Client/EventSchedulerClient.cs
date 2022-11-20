@@ -8,12 +8,6 @@ using EventScheduler.Api.Models;
 
 namespace EventScheduler.Api.Client
 {
-  public interface IEventSchedulerClient
-  {
-    public Task ScheduleAsync(
-      EventSchedule schedule,
-      CancellationToken ctx);
-  }
   public class EventSchedulerClient : IEventSchedulerClient
   {
     // TODO: Move secret to appsettings

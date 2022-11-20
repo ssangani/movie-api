@@ -16,7 +16,7 @@ namespace Ledger.Cli.Calculator
         .GroupBy(ee => ee.Employee.Id)
         .SelectMany(ee => GetEmployeePositions(ee, targetDate, precision))
         .OrderBy(pos => pos.Employee.Id)
-        .OrderBy(pos => pos.AwardId);
+        .ThenBy(pos => pos.AwardId);
     }
 
     private IEnumerable<EquityPosition> GetEmployeePositions(
